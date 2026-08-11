@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "nama": "Smartphone Premium X",
+    "harga": 12000000,
+    "deskripsi": "Smartphone dengan performa tinggi dan kamera jernih.",
+    "gambar": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500",
+    "ytVideo": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+  },
+  {
+    "id": 2,
+    "nama": "Laptop Ultra Book Pro",
+    "harga": 18500000,
+    "deskripsi": "Laptop tipis dengan daya tahan baterai sangat lama.",
+    "gambar": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=500",
+    "ytVideo": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+  },
+  {
+    "id": 3,
+    "nama": "Asus tugas 15",
+    "harga": 25000000,
+    "deskripsi": "Laptop gaming gahar untuk kebutuhan berat.",
+    "gambar": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=500",
+    "ytVideo": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+  },
+  {
+    "id": 4,
+    "nama": "Asus k16",
+    "harga": 12000000,
+    "deskripsi": "Laptop Asus K16 murah dan kencang.",
+    "gambar": "lap.jpeg",
+    "ytVideo": "https://www.youtube.com/embed/t07VLGRq3_c"
+  }
+]
