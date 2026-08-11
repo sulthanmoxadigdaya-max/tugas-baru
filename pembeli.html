@@ -436,48 +436,29 @@
         const buyerName = localStorage.getItem('buyerName') || 'Pelanggan';
         document.getElementById('displayName').innerText = buyerName;
 
-        // PRODUK DEFAULT PERMANEN (Akan muncul di semua device)
-        const defaultProducts = [
-            {
-                id: 1,
-                nama: "Smartphone Premium X",
-                harga: 12000000,
-                deskripsi: "Smartphone dengan performa tinggi dan kamera jernih.",
-                gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500",
-                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-            },
-            {
-                id: 2,
-                nama: "Laptop Ultra Book Pro",
-                harga: 18500000,
-                deskripsi: "Laptop tipis dengan daya tahan baterai sangat lama.",
-                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=500",
-                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-            },
-            {
-                id: 3,
-                nama: "Asus tugas 15",
-                harga: 25000000,
-                deskripsi: "Laptop gaming gahar untuk kebutuhan berat.",
-                gambar: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=500",
-                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-            },
-            {
-                id: 4,
-                nama: "Asus k16",
-                harga: 12000000,
-                deskripsi: "Laptop Asus K16 harga terjangkau dan kencang.",
-                gambar: "lap.jpeg",
-                ytVideo: "https://www.youtube.com/embed/t07VLGRq3_c" // Format Embed YouTube yang Benar
-            }
-        ];
-
-        // Ambil produk dari localStorage, jika kosong pakai defaultProducts
-        let storedProducts = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
-        let products = storedProducts.length > 0 ? storedProducts : defaultProducts;
-
+        let products = [];
         let cart = JSON.parse(localStorage.getItem('buyerCart')) || [];
         let selectedProduct = null;
+
+        // FUNGSI MEMUAT PRODUK PERMANEN DARI PRODUCTS.JSON
+        async function fetchProducts() {
+            try {
+                // Mengambil data permanen dari products.json
+                const response = await fetch('products.json');
+                const jsonProducts = await response.json();
+
+                // Mengambil data tambahan dari localStorage (jika ditambahkan dari admin lokal)
+                const localProducts = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
+
+                // Menggabungkan produk permanen dari json dengan produk dari local storage
+                products = [...jsonProducts, ...localProducts];
+                renderBuyerProducts();
+            } catch (error) {
+                console.error("Gagal memuat products.json, menggunakan fallback local storage:", error);
+                products = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
+                renderBuyerProducts();
+            }
+        }
 
         function renderBuyerProducts(filteredProducts = null) {
             const grid = document.getElementById('buyerProductGrid');
@@ -684,8 +665,8 @@
             document.getElementById('statusModal').style.display = 'none';
         }
 
-        // Jalankan render awal
-        renderBuyerProducts();
+        // Panggil fungsi mengambil data dari products.json
+        fetchProducts();
     </script>
 </body>
 </html>
