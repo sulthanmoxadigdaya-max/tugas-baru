@@ -97,7 +97,6 @@
             color: #0f172a;
         }
 
-        /* BAR PENCARIAN (SEARCH BAR) */
         .search-box {
             position: relative;
             flex: 1;
@@ -372,11 +371,9 @@
     </header>
 
     <div class="container">
-        
         <div class="top-section">
             <h2 class="welcome-title">Halo, <span id="displayName">Pelanggan</span>! 👋</h2>
             
-            <!-- INPUT FITUR SEARCH -->
             <div class="search-box">
                 <span class="search-icon">🔍</span>
                 <input type="text" id="searchInput" placeholder="Cari barang impianmu..." oninput="searchProducts()">
@@ -435,20 +432,50 @@
         </div>
     </div>
 
-    <div class="produk">
-        <img src="lap.jpeg" alt="k16">
-        <h3>Asus k16</h3>
-        <div class="harga">12.000.000</div>
-        <div class="deskripsi">murah</div>
-        <iframe src="https://youtu.be/t07VLGRq3_c?si=wYzprHoP4v2uhbdw"></iframe>
-        <button class="btn" onclick="lap.jpeg('Asus k16','12.000.000')"> beli</button>
-    </div>
-    
     <script>
         const buyerName = localStorage.getItem('buyerName') || 'Pelanggan';
         document.getElementById('displayName').innerText = buyerName;
 
-        let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
+        // PRODUK DEFAULT PERMANEN (Akan muncul di semua device)
+        const defaultProducts = [
+            {
+                id: 1,
+                nama: "Smartphone Premium X",
+                harga: 12000000,
+                deskripsi: "Smartphone dengan performa tinggi dan kamera jernih.",
+                gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500",
+                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            },
+            {
+                id: 2,
+                nama: "Laptop Ultra Book Pro",
+                harga: 18500000,
+                deskripsi: "Laptop tipis dengan daya tahan baterai sangat lama.",
+                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=500",
+                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            },
+            {
+                id: 3,
+                nama: "Asus tugas 15",
+                harga: 25000000,
+                deskripsi: "Laptop gaming gahar untuk kebutuhan berat.",
+                gambar: "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=500",
+                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            },
+            {
+                id: 4,
+                nama: "Asus k16",
+                harga: 12000000,
+                deskripsi: "Laptop Asus K16 harga terjangkau dan kencang.",
+                gambar: "lap.jpeg",
+                ytVideo: "https://www.youtube.com/embed/t07VLGRq3_c" // Format Embed YouTube yang Benar
+            }
+        ];
+
+        // Ambil produk dari localStorage, jika kosong pakai defaultProducts
+        let storedProducts = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
+        let products = storedProducts.length > 0 ? storedProducts : defaultProducts;
+
         let cart = JSON.parse(localStorage.getItem('buyerCart')) || [];
         let selectedProduct = null;
 
@@ -468,7 +495,7 @@
                 card.className = 'product-card';
                 card.onclick = () => openProductModal(p);
                 card.innerHTML = `
-                    <img src="${p.gambar}" alt="${p.nama}">
+                    <img src="${p.gambar}" alt="${p.nama}" onerror="this.src='https://via.placeholder.com/300x200?text=Gambar+Tidak+Tersedia'">
                     <div class="card-body">
                         <div>
                             <h3>${p.nama}</h3>
@@ -483,7 +510,6 @@
             updateCartBadge();
         }
 
-        // FUNGSI PENCARIAN PRODUK
         function searchProducts() {
             const query = document.getElementById('searchInput').value.toLowerCase().trim();
             const filtered = products.filter(p => 
@@ -658,6 +684,7 @@
             document.getElementById('statusModal').style.display = 'none';
         }
 
+        // Jalankan render awal
         renderBuyerProducts();
     </script>
 </body>
