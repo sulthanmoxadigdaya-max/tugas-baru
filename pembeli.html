@@ -667,6 +667,46 @@
 
         // Panggil fungsi mengambil data dari products.json
         fetchProducts();
+
+
+
+function openProductModal(p) {
+    selectedProduct = p;
+    document.getElementById('modalTitle').innerText = p.nama;
+    document.getElementById('modalPrice').innerText = 'Rp ' + Number(p.harga).toLocaleString('id-ID');
+    document.getElementById('modalDesc').innerText = p.deskripsi;
+    document.getElementById('modalImg').src = p.gambar;
+    document.getElementById('buyQty').value = 1;
+
+    const mediaContainer = document.getElementById('mediaContainer');
+    mediaContainer.innerHTML = '';
+
+    if (p.ytVideo) {
+        let embedUrl = p.ytVideo;
+        
+        // Mengubah otomatis link biasa/youtu.be menjadi link /embed/
+        if (embedUrl.includes('youtu.be/')) {
+            const videoId = embedUrl.split('youtu.be/')[1].split('?')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        } else if (embedUrl.includes('watch?v=')) {
+            const videoId = embedUrl.split('watch?v=')[1].split('&')[0];
+            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        if (embedUrl.startsWith('data:video/')) {
+            mediaContainer.innerHTML = `<video src="${embedUrl}" class="video-local" controls></video>`;
+        } else {
+            mediaContainer.innerHTML = `<iframe src="${embedUrl}" class="video-iframe" allowfullscreen></iframe>`;
+        }
+    } else {
+        mediaContainer.innerHTML = `<p style="color:#fff; padding:15px; text-align:center;">Tidak ada video demo.</p>`;
+    }
+
+    document.getElementById('productModal').style.display = 'flex';
+}
+
+
+
     </script>
 </body>
 </html>
