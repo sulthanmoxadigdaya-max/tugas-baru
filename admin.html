@@ -30,7 +30,6 @@
             overflow-x: hidden;
         }
 
-        /* Animated Header */
         header {
             background: linear-gradient(135deg, #312e81, #1e1b4b);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -104,13 +103,16 @@
             gap: 30px;
         }
 
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
         @media (max-width: 900px) {
             .container {
                 grid-template-columns: 1fr;
             }
         }
 
-        /* Glassmorphism Cards with Hover Effects */
         .card {
             background: var(--card-bg);
             border-radius: 16px;
@@ -135,7 +137,6 @@
             padding-bottom: 10px;
         }
 
-        /* Form Controls */
         .form-group {
             margin-bottom: 18px;
         }
@@ -147,7 +148,7 @@
             color: var(--text-muted);
         }
 
-        .form-group input, .form-group textarea {
+        .form-group input, .form-group textarea, .form-group select {
             width: 100%;
             padding: 12px;
             border-radius: 8px;
@@ -158,7 +159,7 @@
             transition: border-color 0.3s ease;
         }
 
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
         }
@@ -183,7 +184,6 @@
             box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
         }
 
-        /* Stats & Decorative Animation Widget */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -197,8 +197,6 @@
             border-radius: 12px;
             border: 1px solid rgba(255,255,255,0.05);
             text-align: center;
-            position: relative;
-            overflow: hidden;
         }
 
         .stat-box h3 {
@@ -212,7 +210,6 @@
             color: var(--text-muted);
         }
 
-        /* Inventory List */
         .product-list-admin {
             display: flex;
             flex-direction: column;
@@ -262,6 +259,35 @@
             cursor: pointer;
             font-size: 0.8rem;
         }
+
+        /* Tabel Order Status Admin */
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .order-table th, .order-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.9rem;
+        }
+
+        .order-table th {
+            color: var(--accent);
+            background: #0f172a;
+        }
+
+        .status-select {
+            padding: 6px 10px;
+            border-radius: 6px;
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid var(--primary);
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -294,8 +320,8 @@
                     <input type="text" id="gambar" placeholder="https://images.unsplash.com/photo-..." required>
                 </div>
                 <div class="form-group">
-                    <label for="ytVideo">Link YouTube Demo Produk (ID / URL Embed)</label>
-                    <input type="text" id="ytVideo" placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ" required>
+                    <label for="ytVideo">Link YouTube Demo Produk (ID / URL Embed / Link Biasa)</label>
+                    <input type="text" id="ytVideo" placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ" required>
                 </div>
                 <button type="submit" class="btn-submit">Simpan Produk ke Database</button>
             </form>
@@ -311,8 +337,8 @@
                     <h3 id="totalProductsCount">0</h3>
                 </div>
                 <div class="stat-box">
-                    <p>Status Server</p>
-                    <h3 style="color:#10b981;">ONLINE</h3>
+                    <p>Total Pesanan Pembeli</p>
+                    <h3 id="totalOrdersCount" style="color: #ec4899;">0</h3>
                 </div>
             </div>
 
@@ -322,10 +348,44 @@
             </div>
         </div>
 
+        <!-- BAGIAN KELOLA PESANAN & STATUS PENGIRIMAN -->
+        <div class="card full-width">
+            <h2>🚚 Kelola Status Pengiriman Barang Customer</h2>
+            <div style="overflow-x: auto;">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>ID Order</th>
+                            <th>Pembeli</th>
+                            <th>Tanggal</th>
+                            <th>Detail Barang</th>
+                            <th>Total Belanja</th>
+                            <th>Status Pengiriman</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersBody">
+                        <!-- Dynamic Orders -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // Load existing products or set default
+        function formatYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
+            } else if (url.trim().length === 11) {
+                return `https://www.youtube.com/embed/${url.trim()}`;
+            }
+            return url;
+        }
+
         let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [
             {
                 id: 1,
@@ -344,6 +404,8 @@
                 ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
             }
         ];
+
+        let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
 
         function renderAdminProducts() {
             const container = document.getElementById('productListAdmin');
@@ -368,14 +430,49 @@
             localStorage.setItem('gadgetProducts', JSON.stringify(products));
         }
 
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrdersBody');
+            const orderCountElem = document.getElementById('totalOrdersCount');
+            tbody.innerHTML = '';
+            orderCountElem.innerText = orders.length;
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk dari pembeli.</td></tr>`;
+                return;
+            }
+
+            orders.forEach((ord, index) => {
+                const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${ord.id}</strong></td>
+                    <td>${ord.buyerName}</td>
+                    <td>${ord.date}</td>
+                    <td>${itemsSummary}</td>
+                    <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
+                    <td>
+                        <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
+                            <option value="Sedang Diproses" ${ord.status === 'Sedang Diproses' ? 'selected' : ''}>⏳ Sedang Diproses</option>
+                            <option value="Dalam Perjalanan" ${ord.status === 'Dalam Perjalanan' ? 'selected' : ''}>🚚 Dalam Perjalanan</option>
+                            <option value="Sudah Sampai" ${ord.status === 'Sudah Sampai' ? 'selected' : ''}>✅ Sudah Sampai</option>
+                            <option value="Selesai" ${ord.status === 'Selesai' ? 'selected' : ''}>🎉 Selesai</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateOrderStatus(index, newStatus) {
+            orders[index].status = newStatus;
+            localStorage.setItem('gadgetOrders', JSON.stringify(orders));
+            alert(`Status pesanan #${orders[index].id} telah diubah menjadi: ${newStatus}`);
+        }
+
         function saveProduct(event) {
             event.preventDefault();
             let ytInput = document.getElementById('ytVideo').value;
-            
-            // Format link youtube to embed format if needed
-            if(ytInput.includes('watch?v=')) {
-                ytInput = ytInput.replace('watch?v=', 'embed/');
-            }
+            ytInput = formatYouTubeEmbedUrl(ytInput);
 
             const newProd = {
                 id: Date.now(),
@@ -401,6 +498,7 @@
 
         // Initialize
         renderAdminProducts();
+        renderAdminOrders();
     </script>
 </body>
 </html>
