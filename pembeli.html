@@ -23,8 +23,10 @@
             top: 0;
             background: #1e293b;
             color: #fff;
-            padding: 15px 30px;
+            padding: 12px 20px;
             display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -32,27 +34,29 @@
         }
 
         header h1 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: #38bdf8;
         }
 
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
         .btn-header {
             background: #334155;
             color: #fff;
-            padding: 8px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             font-weight: bold;
             border: none;
+            font-size: 0.85rem;
             transition: background 0.3s ease;
         }
 
@@ -63,8 +67,8 @@
         .cart-badge {
             background: #ef4444;
             color: white;
-            font-size: 0.8rem;
-            padding: 2px 8px;
+            font-size: 0.75rem;
+            padding: 2px 7px;
             border-radius: 10px;
         }
 
@@ -75,7 +79,7 @@
             padding: 6px 12px;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 0.85rem;
         }
 
         .btn-exit:hover {
@@ -86,20 +90,20 @@
 
         .container {
             max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
 
         .welcome-title {
-            margin-bottom: 25px;
-            font-size: 1.6rem;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
             color: #0f172a;
         }
 
         .product-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
         }
 
         .product-card {
@@ -107,7 +111,7 @@
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -121,12 +125,12 @@
 
         .product-card img {
             width: 100%;
-            height: 200px;
+            height: 180px;
             object-fit: cover;
         }
 
         .product-card .card-body {
-            padding: 18px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -134,27 +138,26 @@
         }
 
         .product-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
+            font-size: 1rem;
+            margin-bottom: 6px;
             color: #0f172a;
         }
 
         .product-card .price {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #2563eb;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .product-card .click-hint {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #64748b;
             text-align: right;
-            margin-top: 10px;
             font-style: italic;
         }
 
-        /* Modal Overlay & Card Styling */
+        /* Modal Overlay & Responsive Card */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -162,114 +165,103 @@
             width: 100vw;
             height: 100vh;
             background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(6px);
             display: none;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            padding: 20px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            padding: 15px;
         }
 
         .modal-content {
             background: #fff;
-            width: 90%;
-            max-width: 1000px;
+            width: 100%;
+            max-width: 900px;
             max-height: 90vh;
             border-radius: 16px;
             overflow-y: auto;
             position: relative;
-            padding: 30px;
+            padding: 25px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            gap: 20px;
         }
 
         @media (max-width: 768px) {
             .modal-content {
                 grid-template-columns: 1fr;
+                padding: 20px;
             }
         }
 
         .close-modal {
             position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 2rem;
+            top: 12px;
+            right: 18px;
+            font-size: 1.8rem;
             cursor: pointer;
             color: #64748b;
-            transition: color 0.2s;
-        }
-
-        .close-modal:hover {
-            color: #ef4444;
         }
 
         .modal-left img {
             width: 100%;
-            border-radius: 12px;
-            max-height: 300px;
-            object-fit: cover;
-            margin-bottom: 15px;
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
             border-radius: 10px;
+            max-height: 250px;
+            object-fit: cover;
+            margin-bottom: 12px;
         }
 
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .media-container {
+            position: relative;
             width: 100%;
-            height: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-iframe {
+            width: 100%;
+            height: 220px;
             border: 0;
         }
 
+        .video-local {
+            width: 100%;
+            max-height: 220px;
+            border-radius: 8px;
+        }
+
         .modal-right h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
             color: #0f172a;
         }
 
         .modal-right .modal-price {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: #2563eb;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .modal-right p {
             color: #475569;
-            line-height: 1.6;
-            margin-bottom: 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 15px;
         }
 
         .qty-selector {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .qty-selector label {
-            font-weight: bold;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
         .qty-selector input {
-            width: 70px;
-            padding: 8px;
-            font-size: 1rem;
+            width: 60px;
+            padding: 6px;
+            font-size: 0.9rem;
             border-radius: 6px;
             border: 1px solid #cbd5e1;
             text-align: center;
@@ -277,23 +269,17 @@
 
         .btn-add-cart {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: #2563eb;
             color: #fff;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .btn-add-cart:hover {
-            background: #1d4ed8;
         }
 
         .cart-modal {
-            max-width: 600px;
+            max-width: 500px;
             grid-template-columns: 1fr;
         }
 
@@ -301,52 +287,42 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #e2e8f0;
+            font-size: 0.9rem;
         }
 
         .cart-total {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: bold;
             text-align: right;
-            margin: 20px 0;
-            color: #0f172a;
+            margin: 15px 0;
         }
 
         .cart-actions {
             display: flex;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .btn-checkout {
+        .btn-checkout, .btn-clear {
             flex: 1;
-            padding: 12px;
-            background: #10b981;
-            color: white;
+            padding: 10px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
-        }
-
-        .btn-clear {
-            flex: 1;
-            padding: 12px;
-            background: #ef4444;
             color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* Status Badge Styling */
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 12px;
             font-size: 0.85rem;
+        }
+
+        .btn-checkout { background: #10b981; }
+        .btn-clear { background: #ef4444; }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
             font-weight: bold;
-            display: inline-block;
         }
         .status-proses { background: #fef08a; color: #854d0e; }
         .status-jalan { background: #bae6fd; color: #0369a1; }
@@ -357,8 +333,8 @@
             background: #f8fafc;
             border: 1px solid #cbd5e1;
             border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
+            padding: 12px;
+            margin-bottom: 12px;
         }
     </style>
 </head>
@@ -367,23 +343,15 @@
     <header>
         <h1>🛍️ GadgetStore Pro</h1>
         <div class="header-actions">
-            <button class="btn-header" onclick="openStatusModal()">
-                📦 Lacak Pesanan
-            </button>
-            <button class="btn-header" onclick="openCartModal()">
-                🛒 Keranjang
-                <span class="cart-badge" id="cartCount">0</span>
-            </button>
+            <button class="btn-header" onclick="openStatusModal()">📦 Lacak Pesanan</button>
+            <button class="btn-header" onclick="openCartModal()">🛒 Keranjang <span class="cart-badge" id="cartCount">0</span></button>
             <button class="btn-exit" onclick="window.location.href='index.html'">Keluar</button>
         </div>
     </header>
 
     <div class="container">
         <h2 class="welcome-title">Selamat Datang, <span id="displayName">Pelanggan</span>! 👋</h2>
-        
-        <div class="product-grid" id="buyerProductGrid">
-            <!-- Dynamic Products -->
-        </div>
+        <div class="product-grid" id="buyerProductGrid"></div>
     </div>
 
     <!-- MODAL DETAIL PRODUK -->
@@ -393,9 +361,9 @@
             
             <div class="modal-left">
                 <img id="modalImg" src="" alt="Produk">
-                <p style="font-weight: bold; margin-bottom: 8px;">🎥 Video Demo YouTube:</p>
-                <div class="video-container">
-                    <iframe id="modalVideo" src="" allowfullscreen></iframe>
+                <p style="font-weight: bold; margin-bottom: 6px; font-size: 0.85rem;">🎥 Video Demo Produk:</p>
+                <div class="media-container" id="mediaContainer">
+                    <!-- Dynamic Video (YouTube iframe / Local Video tag) -->
                 </div>
             </div>
 
@@ -405,7 +373,7 @@
                 <p id="modalDesc">Deskripsi detail produk akan ditampilkan di sini.</p>
 
                 <div class="qty-selector">
-                    <label for="buyQty">Jumlah Beli:</label>
+                    <label for="buyQty" style="font-size:0.9rem;">Jumlah Beli:</label>
                     <input type="number" id="buyQty" value="1" min="1">
                 </div>
 
@@ -414,67 +382,34 @@
         </div>
     </div>
 
-    <!-- MODAL KERANJANG BELANJA -->
+    <!-- MODAL KERANJANG -->
     <div class="modal-overlay" id="cartModal">
         <div class="modal-content cart-modal">
             <span class="close-modal" onclick="closeCartModal()">&times;</span>
             <h2>🛒 Keranjang Belanja Anda</h2>
-            <div id="cartItemsList" style="margin-top: 15px;">
-                <!-- Cart items list -->
-            </div>
+            <div id="cartItemsList" style="margin-top: 10px;"></div>
             <div class="cart-total" id="cartTotalText">Total: Rp 0</div>
             <div class="cart-actions">
-                <button class="btn-clear" onclick="clearCart()">Batalkan / Kosongkan</button>
+                <button class="btn-clear" onclick="clearCart()">Kosongkan</button>
                 <button class="btn-checkout" onclick="checkout()">Checkout Sekarang</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL STATUS PESANAN / PENGIRIMAN -->
+    <!-- MODAL STATUS PESANAN -->
     <div class="modal-overlay" id="statusModal">
         <div class="modal-content cart-modal">
             <span class="close-modal" onclick="closeStatusModal()">&times;</span>
-            <h2>📦 Status Pengiriman Barang Anda</h2>
-            <div id="buyerOrdersList" style="margin-top: 15px;">
-                <!-- List Order Status -->
-            </div>
+            <h2>📦 Status Pengiriman Barang</h2>
+            <div id="buyerOrdersList" style="margin-top: 15px;"></div>
         </div>
     </div>
 
     <script>
-        function formatYouTubeEmbedUrl(url) {
-            if (!url) return '';
-            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
-            const match = url.match(regExp);
-
-            if (match && match[2].length === 11) {
-                return `https://www.youtube.com/embed/${match[2]}`;
-            }
-            return url;
-        }
-
         const buyerName = localStorage.getItem('buyerName') || 'Pelanggan';
         document.getElementById('displayName').innerText = buyerName;
 
-        let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [
-            {
-                id: 1,
-                nama: "Smartphone Premium X",
-                harga: 12000000,
-                deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core, Kamera 108MP.",
-                gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
-                ytVideo: "https://www.youtube.com/embed/L_LUpnjgPso"
-            },
-            {
-                id: 2,
-                nama: "Laptop Ultra Book Pro",
-                harga: 18500000,
-                deskripsi: "Layar 14 Retina 120Hz, RAM 16GB SSD 512GB, Baterai Tahan 18 Jam.",
-                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
-                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-            }
-        ];
-
+        let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
         let cart = JSON.parse(localStorage.getItem('buyerCart')) || [];
         let selectedProduct = null;
 
@@ -508,15 +443,26 @@
             document.getElementById('modalPrice').innerText = 'Rp ' + Number(p.harga).toLocaleString('id-ID');
             document.getElementById('modalDesc').innerText = p.deskripsi;
             document.getElementById('modalImg').src = p.gambar;
-            document.getElementById('modalVideo').src = formatYouTubeEmbedUrl(p.ytVideo);
             document.getElementById('buyQty').value = 1;
+
+            const mediaContainer = document.getElementById('mediaContainer');
+            mediaContainer.innerHTML = '';
+
+            // Handle Video (YouTube / Local File Base64)
+            if (p.ytVideo && p.ytVideo.startsWith('data:video/')) {
+                mediaContainer.innerHTML = `<video src="${p.ytVideo}" class="video-local" controls></video>`;
+            } else if (p.ytVideo) {
+                mediaContainer.innerHTML = `<iframe src="${p.ytVideo}" class="video-iframe" allowfullscreen></iframe>`;
+            } else {
+                mediaContainer.innerHTML = `<p style="color:#fff; padding:20px; text-align:center;">Tidak ada video demo.</p>`;
+            }
 
             document.getElementById('productModal').style.display = 'flex';
         }
 
         function closeProductModal() {
             document.getElementById('productModal').style.display = 'none';
-            document.getElementById('modalVideo').src = '';
+            document.getElementById('mediaContainer').innerHTML = '';
         }
 
         function addToCart() {
@@ -560,7 +506,7 @@
                     div.className = 'cart-item';
                     div.innerHTML = `
                         <div>
-                            <h4>${item.nama}</h4>
+                            <strong>${item.nama}</strong><br>
                             <small>${item.qty} x Rp ${Number(item.harga).toLocaleString('id-ID')}</small>
                         </div>
                         <strong>Rp ${Number(subtotal).toLocaleString('id-ID')}</strong>
@@ -578,7 +524,7 @@
         }
 
         function clearCart() {
-            if(confirm('Batalkan semua pesanan dan kosongkan keranjang?')) {
+            if(confirm('Kosongkan keranjang belanja?')) {
                 cart = [];
                 localStorage.removeItem('buyerCart');
                 updateCartBadge();
@@ -586,7 +532,6 @@
             }
         }
 
-        // FUNGSI CHECKOUT & SIMPAN ORDERS
         function checkout() {
             if(cart.length === 0) {
                 alert('Keranjang masih kosong!');
@@ -597,7 +542,7 @@
             const totalAmount = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
 
             const newOrder = {
-                id: Math.floor(100000 + Math.random() * 900000), // Random 6 digit Order ID
+                id: Math.floor(100000 + Math.random() * 900000),
                 buyerName: buyerName,
                 date: new Date().toLocaleDateString('id-ID'),
                 items: [...cart],
@@ -608,7 +553,7 @@
             orders.push(newOrder);
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
 
-            alert(`Pesanan #${newOrder.id} berhasil dicheckout! Anda dapat melacak statusnya di menu "Lacak Pesanan".`);
+            alert(`Pesanan #${newOrder.id} berhasil dicheckout!`);
             
             cart = [];
             localStorage.removeItem('buyerCart');
@@ -616,7 +561,6 @@
             closeCartModal();
         }
 
-        // FUNGSI MEMBUKA MODAL STATUS PESANAN PEMBELI
         function openStatusModal() {
             const container = document.getElementById('buyerOrdersList');
             container.innerHTML = '';
@@ -640,13 +584,13 @@
                     const div = document.createElement('div');
                     div.className = 'order-card-buyer';
                     div.innerHTML = `
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
                             <strong>Order #${ord.id}</strong>
                             <span class="status-badge ${badgeClass}">${icon} ${ord.status}</span>
                         </div>
-                        <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;">Tanggal: ${ord.date}</p>
-                        <p style="font-size:0.9rem; margin-bottom:5px;"><strong>Barang:</strong> ${itemsText}</p>
-                        <p style="font-size:0.95rem; color:#2563eb; font-weight:bold;">Total: Rp ${Number(ord.total).toLocaleString('id-ID')}</p>
+                        <p style="font-size:0.8rem; color:#64748b; margin-bottom:4px;">Tanggal: ${ord.date}</p>
+                        <p style="font-size:0.85rem; margin-bottom:4px;"><strong>Barang:</strong> ${itemsText}</p>
+                        <p style="font-size:0.9rem; color:#2563eb; font-weight:bold;">Total: Rp ${Number(ord.total).toLocaleString('id-ID')}</p>
                     `;
                     container.appendChild(div);
                 });
