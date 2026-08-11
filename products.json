@@ -5,7 +5,7 @@
     "harga": 12000000,
     "deskripsi": "Smartphone dengan performa tinggi dan kamera jernih.",
     "gambar": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=500",
-    "ytVideo": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+    "ytVideo": "https://youtu.be/Ef-2gRQdJes?si=hqZBbWHgJlpnDapG"
   },
   {
     "id": 2,
@@ -13,7 +13,7 @@
     "harga": 18500000,
     "deskripsi": "Laptop tipis dengan daya tahan baterai sangat lama.",
     "gambar": "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=500",
-    "ytVideo": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+    "ytVideo": "https://youtu.be/2i-GuhsKIp4?si=5oVm4BjlX3PQci-q"
   },
   {
     "id": 3,
@@ -21,7 +21,7 @@
     "harga": 25000000,
     "deskripsi": "Laptop gaming gahar untuk kebutuhan berat.",
     "gambar": "https://images.unsplash.com/photo-1603302576837-37561b2e2302?q=80&w=500",
-    "ytVideo": "https://www.youtube.com/embed/dQw4w9WgXcQ"
+    "ytVideo": "https://youtu.be/ogXoHel6va4?si=tum7KFavcyV-cyYf"
   },
   {
     "id": 4,
@@ -31,4 +31,15 @@
     "gambar": "lap.jpeg",
     "ytVideo": "https://www.youtube.com/embed/t07VLGRq3_c"
   }
+ 
+{
+    "id": 5,
+    "nama": "MSI modern 14",
+    "harga": 17000000,
+    "deskripsi": "Laptop Asus MSI GAMING murah dan kencang.",
+    "gambar": "msi.jpeg",
+    "ytVideo": "https://youtu.be/BczJRlRBuas?si=uKK0g5MBipKWO3cB"
+  }
+
+
 ]
