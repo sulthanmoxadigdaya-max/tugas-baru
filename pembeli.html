@@ -415,6 +415,18 @@
     </div>
 
     <script>
+        // Helper function: Memastikan URL terkonversi ke embed sebelum dipasang di iframe
+        function formatYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
+            }
+            return url;
+        }
+
         // Set User Name
         document.getElementById('displayName').innerText = localStorage.getItem('buyerName') || 'Pelanggan';
 
@@ -472,7 +484,9 @@
             document.getElementById('modalPrice').innerText = 'Rp ' + Number(p.harga).toLocaleString('id-ID');
             document.getElementById('modalDesc').innerText = p.deskripsi;
             document.getElementById('modalImg').src = p.gambar;
-            document.getElementById('modalVideo').src = p.ytVideo;
+            
+            // Konversi otomatis URL sebelum dipasang ke iframe
+            document.getElementById('modalVideo').src = formatYouTubeEmbedUrl(p.ytVideo);
             document.getElementById('buyQty').value = 1;
 
             document.getElementById('productModal').style.display = 'flex';
