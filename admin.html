@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GadgetStore Pro - Admin Panel</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent: #06b6d4;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animated Header */
+        header {
+            background: linear-gradient(135deg, #312e81, #1e1b4b);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 25px 30px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+            animation: pulseGlow 6s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(0.8); opacity: 0.5; }
+            100% { transform: scale(1.2); opacity: 0.8; }
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1;
+        }
+
+        .btn-logout:hover {
+            background: #dc2626;
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Glassmorphism Cards with Hover Effects */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .card h2 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--accent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        /* Stats & Decorative Animation Widget */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-box h3 {
+            font-size: 1.8rem;
+            color: #38bdf8;
+            margin-top: 5px;
+        }
+
+        .stat-box p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Inventory List */
+        .product-list-admin {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .product-item-admin {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .product-item-admin img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .product-item-admin .info {
+            flex: 1;
+        }
+
+        .product-item-admin .info h4 {
+            font-size: 0.95rem;
+        }
+
+        .product-item-admin .info p {
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚡ GadgetStore Pro <span class="admin-badge">Admin System</span></h1>
+        <button class="btn-logout" onclick="window.location.href='index.html'">Logout</button>
+    </header>
+
+    <div class="container">
+        
+        <!-- Form Tambah Produk -->
+        <div class="card">
+            <h2>➕ Tambah / Kelola Inventaris Produk</h2>
+            <form id="addProductForm" onsubmit="saveProduct(event)">
+                <div class="form-group">
+                    <label for="nama">Nama Produk</label>
+                    <input type="text" id="nama" placeholder="Contoh: iPad Pro M2" required>
+                </div>
+                <div class="form-group">
+                    <label for="harga">Harga Produk (Rp)</label>
+                    <input type="number" id="harga" placeholder="15000000" required>
+                </div>
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi & Spesifikasi Singkat</label>
+                    <textarea id="deskripsi" rows="3" placeholder="Layar 120Hz, RAM 16GB, Chipset M2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="gambar">URL Gambar Produk</label>
+                    <input type="text" id="gambar" placeholder="https://images.unsplash.com/photo-..." required>
+                </div>
+                <div class="form-group">
+                    <label for="ytVideo">Link YouTube Demo Produk (ID / URL Embed)</label>
+                    <input type="text" id="ytVideo" placeholder="https://www.youtube.com/embed/dQw4w9WgXcQ" required>
+                </div>
+                <button type="submit" class="btn-submit">Simpan Produk ke Database</button>
+            </form>
+        </div>
+
+        <!-- Dashboard Analytics & Daftar Inventaris -->
+        <div class="card">
+            <h2>📊 Analytics & Inventaris Saat Ini</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <p>Total Produk</p>
+                    <h3 id="totalProductsCount">0</h3>
+                </div>
+                <div class="stat-box">
+                    <p>Status Server</p>
+                    <h3 style="color:#10b981;">ONLINE</h3>
+                </div>
+            </div>
+
+            <h2>📦 Daftar Produk Aktif</h2>
+            <div class="product-list-admin" id="productListAdmin">
+                <!-- Dynamic Items -->
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Load existing products or set default
+        let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [
+            {
+                id: 1,
+                nama: "Smartphone Premium X",
+                harga: 12000000,
+                deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core, Kamera 108MP.",
+                gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
+                ytVideo: "https://www.youtube.com/embed/L_LUpnjgPso"
+            },
+            {
+                id: 2,
+                nama: "Laptop Ultra Book Pro",
+                harga: 18500000,
+                deskripsi: "Layar 14 Retina 120Hz, RAM 16GB SSD 512GB, Baterai Tahan 18 Jam.",
+                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
+                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            }
+        ];
+
+        function renderAdminProducts() {
+            const container = document.getElementById('productListAdmin');
+            const countElem = document.getElementById('totalProductsCount');
+            container.innerHTML = '';
+            countElem.innerText = products.length;
+
+            products.forEach((p, index) => {
+                const item = document.createElement('div');
+                item.className = 'product-item-admin';
+                item.innerHTML = `
+                    <img src="${p.gambar}" alt="${p.nama}">
+                    <div class="info">
+                        <h4>${p.nama}</h4>
+                        <p>Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                    </div>
+                    <button class="btn-delete" onclick="deleteProduct(${index})">Hapus</button>
+                `;
+                container.appendChild(item);
+            });
+
+            localStorage.setItem('gadgetProducts', JSON.stringify(products));
+        }
+
+        function saveProduct(event) {
+            event.preventDefault();
+            let ytInput = document.getElementById('ytVideo').value;
+            
+            // Format link youtube to embed format if needed
+            if(ytInput.includes('watch?v=')) {
+                ytInput = ytInput.replace('watch?v=', 'embed/');
+            }
+
+            const newProd = {
+                id: Date.now(),
+                nama: document.getElementById('nama').value,
+                harga: Number(document.getElementById('harga').value),
+                deskripsi: document.getElementById('deskripsi').value,
+                gambar: document.getElementById('gambar').value,
+                ytVideo: ytInput
+            };
+
+            products.push(newProd);
+            renderAdminProducts();
+            document.getElementById('addProductForm').reset();
+            alert('Produk berhasil ditambahkan ke katalog!');
+        }
+
+        function deleteProduct(index) {
+            if(confirm('Yakin ingin menghapus produk ini?')) {
+                products.splice(index, 1);
+                renderAdminProducts();
+            }
+        }
+
+        // Initialize
+        renderAdminProducts();
+    </script>
+</body>
+</html>
