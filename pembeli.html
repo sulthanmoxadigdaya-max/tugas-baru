@@ -18,7 +18,6 @@
             padding-bottom: 50px;
         }
 
-        /* Top Bar Header dengan Keranjang Belanja Sticky */
         header {
             position: sticky;
             top: 0;
@@ -40,12 +39,12 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
         }
 
-        /* Widget Keranjang */
-        .cart-widget {
+        .btn-header {
             background: #334155;
+            color: #fff;
             padding: 8px 16px;
             border-radius: 20px;
             cursor: pointer;
@@ -53,10 +52,11 @@
             align-items: center;
             gap: 8px;
             font-weight: bold;
+            border: none;
             transition: background 0.3s ease;
         }
 
-        .cart-widget:hover {
+        .btn-header:hover {
             background: #475569;
         }
 
@@ -96,7 +96,6 @@
             color: #0f172a;
         }
 
-        /* Product Grid */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -155,7 +154,7 @@
             font-style: italic;
         }
 
-        /* MODAL DETAIL PRODUK (MEMBESAR MEMENUHI LAYAR) */
+        /* Modal Overlay & Card Styling */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -293,7 +292,6 @@
             background: #1d4ed8;
         }
 
-        /* MODAL KERANJANG CHECKOUT */
         .cart-modal {
             max-width: 600px;
             grid-template-columns: 1fr;
@@ -305,10 +303,6 @@
             align-items: center;
             padding: 12px 0;
             border-bottom: 1px solid #e2e8f0;
-        }
-
-        .cart-item h4 {
-            font-size: 1rem;
         }
 
         .cart-total {
@@ -345,18 +339,41 @@
             font-weight: bold;
             cursor: pointer;
         }
+
+        /* Status Badge Styling */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        .status-proses { background: #fef08a; color: #854d0e; }
+        .status-jalan { background: #bae6fd; color: #0369a1; }
+        .status-sampai { background: #bbf7d0; color: #166534; }
+        .status-selesai { background: #e9d5ff; color: #6b21a8; }
+
+        .order-card-buyer {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header / Sticky Top Bar -->
     <header>
         <h1>🛍️ GadgetStore Pro</h1>
         <div class="header-actions">
-            <div class="cart-widget" onclick="openCartModal()">
+            <button class="btn-header" onclick="openStatusModal()">
+                📦 Lacak Pesanan
+            </button>
+            <button class="btn-header" onclick="openCartModal()">
                 🛒 Keranjang
                 <span class="cart-badge" id="cartCount">0</span>
-            </div>
+            </button>
             <button class="btn-exit" onclick="window.location.href='index.html'">Keluar</button>
         </div>
     </header>
@@ -364,13 +381,12 @@
     <div class="container">
         <h2 class="welcome-title">Selamat Datang, <span id="displayName">Pelanggan</span>! 👋</h2>
         
-        <!-- Product Grid -->
         <div class="product-grid" id="buyerProductGrid">
             <!-- Dynamic Products -->
         </div>
     </div>
 
-    <!-- MODAL DETAIL PRODUK MEMBESAR FULLSCREEN -->
+    <!-- MODAL DETAIL PRODUK -->
     <div class="modal-overlay" id="productModal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeProductModal()">&times;</span>
@@ -414,8 +430,18 @@
         </div>
     </div>
 
+    <!-- MODAL STATUS PESANAN / PENGIRIMAN -->
+    <div class="modal-overlay" id="statusModal">
+        <div class="modal-content cart-modal">
+            <span class="close-modal" onclick="closeStatusModal()">&times;</span>
+            <h2>📦 Status Pengiriman Barang Anda</h2>
+            <div id="buyerOrdersList" style="margin-top: 15px;">
+                <!-- List Order Status -->
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Helper function: Memastikan URL terkonversi ke embed sebelum dipasang di iframe
         function formatYouTubeEmbedUrl(url) {
             if (!url) return '';
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
@@ -427,10 +453,9 @@
             return url;
         }
 
-        // Set User Name
-        document.getElementById('displayName').innerText = localStorage.getItem('buyerName') || 'Pelanggan';
+        const buyerName = localStorage.getItem('buyerName') || 'Pelanggan';
+        document.getElementById('displayName').innerText = buyerName;
 
-        // Load Products
         let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [
             {
                 id: 1,
@@ -477,15 +502,12 @@
             updateCartBadge();
         }
 
-        // Modal Product Detail
         function openProductModal(p) {
             selectedProduct = p;
             document.getElementById('modalTitle').innerText = p.nama;
             document.getElementById('modalPrice').innerText = 'Rp ' + Number(p.harga).toLocaleString('id-ID');
             document.getElementById('modalDesc').innerText = p.deskripsi;
             document.getElementById('modalImg').src = p.gambar;
-            
-            // Konversi otomatis URL sebelum dipasang ke iframe
             document.getElementById('modalVideo').src = formatYouTubeEmbedUrl(p.ytVideo);
             document.getElementById('buyQty').value = 1;
 
@@ -494,10 +516,9 @@
 
         function closeProductModal() {
             document.getElementById('productModal').style.display = 'none';
-            document.getElementById('modalVideo').src = ''; // stop video player
+            document.getElementById('modalVideo').src = '';
         }
 
-        // Cart Actions
         function addToCart() {
             const qty = parseInt(document.getElementById('buyQty').value) || 1;
             const existing = cart.find(item => item.id === selectedProduct.id);
@@ -565,16 +586,77 @@
             }
         }
 
+        // FUNGSI CHECKOUT & SIMPAN ORDERS
         function checkout() {
             if(cart.length === 0) {
                 alert('Keranjang masih kosong!');
                 return;
             }
-            alert('Pesanan berhasil dicheckout! Terima kasih telah berbelanja di GadgetStore Pro.');
+
+            const orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
+            const totalAmount = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
+
+            const newOrder = {
+                id: Math.floor(100000 + Math.random() * 900000), // Random 6 digit Order ID
+                buyerName: buyerName,
+                date: new Date().toLocaleDateString('id-ID'),
+                items: [...cart],
+                total: totalAmount,
+                status: 'Sedang Diproses'
+            };
+
+            orders.push(newOrder);
+            localStorage.setItem('gadgetOrders', JSON.stringify(orders));
+
+            alert(`Pesanan #${newOrder.id} berhasil dicheckout! Anda dapat melacak statusnya di menu "Lacak Pesanan".`);
+            
             cart = [];
             localStorage.removeItem('buyerCart');
             updateCartBadge();
             closeCartModal();
+        }
+
+        // FUNGSI MEMBUKA MODAL STATUS PESANAN PEMBELI
+        function openStatusModal() {
+            const container = document.getElementById('buyerOrdersList');
+            container.innerHTML = '';
+
+            const orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
+            const myOrders = orders.filter(o => o.buyerName === buyerName);
+
+            if (myOrders.length === 0) {
+                container.innerHTML = '<p style="color:#64748b; text-align:center;">Anda belum memiliki riwayat pesanan.</p>';
+            } else {
+                myOrders.forEach(ord => {
+                    let badgeClass = 'status-proses';
+                    let icon = '⏳';
+
+                    if(ord.status === 'Dalam Perjalanan') { badgeClass = 'status-jalan'; icon = '🚚'; }
+                    else if(ord.status === 'Sudah Sampai') { badgeClass = 'status-sampai'; icon = '✅'; }
+                    else if(ord.status === 'Selesai') { badgeClass = 'status-selesai'; icon = '🎉'; }
+
+                    const itemsText = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
+
+                    const div = document.createElement('div');
+                    div.className = 'order-card-buyer';
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <strong>Order #${ord.id}</strong>
+                            <span class="status-badge ${badgeClass}">${icon} ${ord.status}</span>
+                        </div>
+                        <p style="font-size:0.85rem; color:#64748b; margin-bottom:5px;">Tanggal: ${ord.date}</p>
+                        <p style="font-size:0.9rem; margin-bottom:5px;"><strong>Barang:</strong> ${itemsText}</p>
+                        <p style="font-size:0.95rem; color:#2563eb; font-weight:bold;">Total: Rp ${Number(ord.total).toLocaleString('id-ID')}</p>
+                    `;
+                    container.appendChild(div);
+                });
+            }
+
+            document.getElementById('statusModal').style.display = 'flex';
+        }
+
+        function closeStatusModal() {
+            document.getElementById('statusModal').style.display = 'none';
         }
 
         // Initialize
