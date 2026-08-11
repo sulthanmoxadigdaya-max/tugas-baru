@@ -2,12 +2,12 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport standar agar HP menyesuaikan layar otomatis -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GadgetStore Pro - Admin Panel</title>
     <style>
         :root {
             --primary: #6366f1;
-            --primary-dark: #4f46e5;
             --accent: #06b6d4;
             --bg-dark: #0f172a;
             --card-bg: #1e293b;
@@ -15,144 +15,136 @@
             --text-muted: #94a3b8;
         }
 
-        * {
+        /* RESET TOTAL AGAR ELEMEN TIDAK MELUBER KELUAR HP */
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden; /* Mencegah geser kanan-kiri yang merusak layout */
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            min-height: 100vh;
-            padding: 15px;
-            overflow-x: hidden;
+            padding: 10px;
         }
 
+        /* HEADER RESPONSIVE */
         header {
             background: linear-gradient(135deg, #312e81, #1e1b4b);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px;
-            border-radius: 16px;
+            padding: 12px 15px;
+            border-radius: 12px;
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 25px;
-            position: relative;
-            overflow: hidden;
+            margin-bottom: 15px;
+            width: 100%;
         }
 
         header h1 {
-            font-size: 1.5rem;
-            z-index: 1;
+            font-size: 1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
+            gap: 6px;
         }
 
         .admin-badge {
             background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            font-size: 0.75rem;
-            padding: 4px 10px;
-            border-radius: 20px;
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
 
         .btn-logout {
             background: #ef4444;
             color: #fff;
             border: none;
-            padding: 8px 18px;
-            border-radius: 8px;
+            padding: 6px 12px;
+            border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 1;
+            font-size: 0.8rem;
         }
 
-        .btn-logout:hover {
-            background: #dc2626;
-            transform: scale(1.05);
-        }
-
+        /* CONTAINER GRID LAYOUT */
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        /* Responsif HP */
-        @media (max-width: 850px) {
+        @media (min-width: 768px) {
             .container {
-                grid-template-columns: 1fr;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
             }
-            header h1 {
-                font-size: 1.2rem;
-            }
+            header h1 { font-size: 1.2rem; }
         }
 
         .card {
             background: var(--card-bg);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 14px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease;
+            width: 100%;
         }
 
         .card h2 {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+            font-size: 1rem;
+            margin-bottom: 10px;
             color: var(--accent);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
+            padding-bottom: 6px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            width: 100%;
         }
 
         .form-group label {
             display: block;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
             color: var(--text-muted);
         }
 
-        .form-group input, .form-group textarea, .form-group select {
+        /* MEMAKSA INPUT TIDAK MELEBIHI LEBAR LAYAR */
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
             width: 100%;
-            padding: 10px 12px;
+            max-width: 100%;
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             background: #0f172a;
             color: #fff;
             outline: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            display: block;
         }
 
         .upload-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
         }
 
-        @media (max-width: 500px) {
-            .upload-options {
-                grid-template-columns: 1fr;
-            }
+        input[type="file"] {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            width: 100%;
         }
 
         .btn-submit {
@@ -162,11 +154,10 @@
             border: none;
             border-radius: 8px;
             color: #fff;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         .btn-cancel {
@@ -176,122 +167,116 @@
             border: none;
             border-radius: 8px;
             color: #fff;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 8px;
+            margin-top: 6px;
             display: none;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
         }
 
         .stat-box {
             background: #0f172a;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 8px;
             text-align: center;
         }
 
         .stat-box h3 {
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #38bdf8;
-            margin-top: 4px;
         }
 
         .stat-box p {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
         }
 
         .product-list-admin {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            max-height: 400px;
+            gap: 8px;
+            max-height: 280px;
             overflow-y: auto;
-            padding-right: 5px;
         }
 
         .product-item-admin {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: #0f172a;
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .product-item-admin img {
-            width: 50px;
-            height: 50px;
+            width: 40px;
+            height: 40px;
             object-fit: cover;
             border-radius: 6px;
+            flex-shrink: 0;
         }
 
         .product-item-admin .info {
             flex: 1;
+            min-width: 0;
         }
 
         .product-item-admin .info h4 {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .product-item-admin .info p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #10b981;
             font-weight: bold;
         }
 
         .action-btns {
             display: flex;
-            gap: 6px;
+            gap: 4px;
         }
 
-        .btn-edit {
-            background: #f59e0b;
-            color: #fff;
+        .btn-edit, .btn-delete {
             border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
+            padding: 4px 7px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             font-weight: bold;
-        }
-
-        .btn-delete {
-            background: #ef4444;
             color: #fff;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
         }
 
-        /* Tabel Order Status Admin */
-        .order-table-container {
+        .btn-edit { background: #f59e0b; }
+        .btn-delete { background: #ef4444; }
+
+        /* TABEL SCROLL KHUSUS PERANGKAT HP */
+        .order-table-wrapper {
+            width: 100%;
             overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .order-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            min-width: 600px;
+            min-width: 450px;
         }
 
         .order-table th, .order-table td {
-            padding: 10px;
+            padding: 6px 8px;
             text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.1);
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
 
         .order-table th {
@@ -300,21 +285,19 @@
         }
 
         .status-select {
-            padding: 6px;
-            border-radius: 6px;
+            padding: 4px;
+            border-radius: 4px;
             background: #0f172a;
             color: #38bdf8;
             border: 1px solid var(--primary);
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.7rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⚡ GadgetStore Pro <span class="admin-badge">Admin System</span></h1>
+        <h1>⚡ GadgetStore <span class="admin-badge">Admin</span></h1>
         <button class="btn-logout" onclick="window.location.href='index.html'">Logout</button>
     </header>
 
@@ -337,36 +320,36 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="deskripsi">Deskripsi & Spesifikasi Singkat</label>
-                    <textarea id="deskripsi" rows="3" placeholder="Layar 120Hz, RAM 16GB, Chipset M2" required></textarea>
+                    <label for="deskripsi">Deskripsi Singkat</label>
+                    <textarea id="deskripsi" rows="2" placeholder="Spesifikasi & Detail" required></textarea>
                 </div>
                 
                 <!-- Upload Gambar -->
                 <div class="form-group">
-                    <label>Gambar Produk (URL / Upload File Internal)</label>
+                    <label>Gambar Produk</label>
                     <div class="upload-options">
-                        <input type="text" id="gambarUrl" placeholder="Masukkan Link/URL Gambar">
+                        <input type="text" id="gambarUrl" placeholder="Link/URL Gambar">
                         <input type="file" id="gambarFile" accept="image/*" onchange="convertFileToBase64('gambarFile', 'gambarUrl')">
                     </div>
                 </div>
 
                 <!-- Upload Video Demo -->
                 <div class="form-group">
-                    <label>Video Demo Produk (YouTube / Upload File Internal)</label>
+                    <label>Video Demo Produk</label>
                     <div class="upload-options">
-                        <input type="text" id="ytVideoUrl" placeholder="URL YouTube / Embed">
+                        <input type="text" id="ytVideoUrl" placeholder="Link YouTube / Embed">
                         <input type="file" id="ytVideoFile" accept="video/*" onchange="convertFileToBase64('ytVideoFile', 'ytVideoUrl')">
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit" id="btnSubmit">Simpan Produk ke Database</button>
+                <button type="submit" class="btn-submit" id="btnSubmit">Simpan Produk</button>
                 <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Batal Edit</button>
             </form>
         </div>
 
-        <!-- Dashboard Analytics & Daftar Inventaris -->
+        <!-- Dashboard Analytics & Inventaris -->
         <div class="card">
-            <h2>📊 Analytics & Inventaris Saat Ini</h2>
+            <h2>📊 Analytics & Inventaris</h2>
             
             <div class="stats-grid">
                 <div class="stat-box">
@@ -374,35 +357,31 @@
                     <h3 id="totalProductsCount">0</h3>
                 </div>
                 <div class="stat-box">
-                    <p>Total Pesanan Pembeli</p>
+                    <p>Total Pesanan</p>
                     <h3 id="totalOrdersCount" style="color: #ec4899;">0</h3>
                 </div>
             </div>
 
             <h2>📦 Daftar Produk Aktif</h2>
-            <div class="product-list-admin" id="productListAdmin">
-                <!-- Dynamic Items -->
-            </div>
+            <div class="product-list-admin" id="productListAdmin"></div>
         </div>
 
-        <!-- BAGIAN KELOLA PESANAN & STATUS PENGIRIMAN -->
-        <div class="card full-width">
-            <h2>🚚 Kelola Status Pengiriman Barang Customer</h2>
-            <div class="order-table-container">
+        <!-- Kelola Status Pengiriman -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>🚚 Kelola Pengiriman Customer</h2>
+            <div class="order-table-wrapper">
                 <table class="order-table">
                     <thead>
                         <tr>
-                            <th>ID Order</th>
+                            <th>ID</th>
                             <th>Pembeli</th>
                             <th>Tanggal</th>
-                            <th>Detail Barang</th>
-                            <th>Total Belanja</th>
+                            <th>Barang</th>
+                            <th>Total</th>
                             <th>Status Pengiriman</th>
                         </tr>
                     </thead>
-                    <tbody id="adminOrdersBody">
-                        <!-- Dynamic Orders -->
-                    </tbody>
+                    <tbody id="adminOrdersBody"></tbody>
                 </table>
             </div>
         </div>
@@ -410,7 +389,6 @@
     </div>
 
     <script>
-        // Konversi File Lokal/Internal ke Base64 Data URL
         function convertFileToBase64(fileInputId, targetUrlInputId) {
             const fileInput = document.getElementById(fileInputId);
             const targetInput = document.getElementById(targetUrlInputId);
@@ -426,7 +404,7 @@
 
         function formatYouTubeEmbedUrl(url) {
             if (!url) return '';
-            if (url.startsWith('data:video/')) return url; // File internal Base64
+            if (url.startsWith('data:video/')) return url;
 
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -491,7 +469,7 @@
             orderCountElem.innerText = orders.length;
 
             if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk dari pembeli.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk.</td></tr>`;
                 return;
             }
 
@@ -506,9 +484,9 @@
                     <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
                     <td>
                         <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
-                            <option value="Sedang Diproses" ${ord.status === 'Sedang Diproses' ? 'selected' : ''}>⏳ Sedang Diproses</option>
-                            <option value="Dalam Perjalanan" ${ord.status === 'Dalam Perjalanan' ? 'selected' : ''}>🚚 Dalam Perjalanan</option>
-                            <option value="Sudah Sampai" ${ord.status === 'Sudah Sampai' ? 'selected' : ''}>✅ Sudah Sampai</option>
+                            <option value="Sedang Diproses" ${ord.status === 'Sedang Diproses' ? 'selected' : ''}>⏳ Diproses</option>
+                            <option value="Dalam Perjalanan" ${ord.status === 'Dalam Perjalanan' ? 'selected' : ''}>🚚 Perjalanan</option>
+                            <option value="Sudah Sampai" ${ord.status === 'Sudah Sampai' ? 'selected' : ''}>✅ Sampai</option>
                             <option value="Selesai" ${ord.status === 'Selesai' ? 'selected' : ''}>🎉 Selesai</option>
                         </select>
                     </td>
@@ -520,7 +498,7 @@
         function updateOrderStatus(index, newStatus) {
             orders[index].status = newStatus;
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-            alert(`Status pesanan #${orders[index].id} telah diubah menjadi: ${newStatus}`);
+            alert(`Status pesanan #${orders[index].id} diperbarui: ${newStatus}`);
         }
 
         function handleFormSubmit(event) {
@@ -540,14 +518,12 @@
             };
 
             if (editId) {
-                // Modus Edit Produk
                 const index = products.findIndex(p => p.id === Number(editId));
                 if (index !== -1) {
                     products[index] = productData;
                     alert('Produk berhasil diperbarui!');
                 }
             } else {
-                // Modus Tambah Produk
                 products.push(productData);
                 alert('Produk baru berhasil ditambahkan!');
             }
@@ -580,7 +556,7 @@
             document.getElementById('gambarFile').value = '';
             document.getElementById('ytVideoFile').value = '';
             document.getElementById('formTitle').innerText = '➕ Tambah Produk Baru';
-            document.getElementById('btnSubmit').innerText = 'Simpan Produk ke Database';
+            document.getElementById('btnSubmit').innerText = 'Simpan Produk';
             document.getElementById('btnCancel').style.display = 'none';
         }
 
@@ -591,7 +567,6 @@
             }
         }
 
-        // Initialize
         renderAdminProducts();
         renderAdminOrders();
     </script>
