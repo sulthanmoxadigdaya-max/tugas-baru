@@ -2,174 +2,616 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <!-- Viewport standar agar HP menyesuaikan layar otomatis -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GadgetStore Pro - Admin Panel</title>
     <style>
-        * {
+        :root {
+            --primary: #6366f1;
+            --accent: #06b6d4;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        /* RESET TOTAL AGAR ELEMEN TIDAK MELUBER KELUAR HP */
+        *, *::before, *::after {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden;
         }
 
         body {
-            background-color: #f8fafc;
-            color: #1e293b;
-            padding: 15px;
+            padding: 10px;
         }
 
+        /* HEADER RESPONSIVE */
         header {
-            background: #0f172a;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #312e81, #1e1b4b);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 10px;
+            margin-bottom: 15px;
+            width: 100%;
         }
 
-        .btn-exit {
+        header h1 {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
             background: #ef4444;
-            color: white;
+            color: #fff;
             border: none;
-            padding: 8px 14px;
+            padding: 6px 12px;
             border-radius: 6px;
-            cursor: pointer;
             font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
         }
 
-        .admin-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
+        /* CONTAINER GRID LAYOUT */
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            header h1 { font-size: 1.2rem; }
         }
 
         .card {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border: 1px solid #e2e8f0;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 100%;
         }
 
         .card h2 {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            color: #2563eb;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 8px;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
         }
 
-        .order-item {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
+        .form-group {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
             border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-size: 0.85rem;
+            display: block;
+        }
+
+        .upload-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            width: 100%;
+        }
+
+        .btn-submit {
+            width: 100%;
             padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 10px;
+            background: #64748b;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
             margin-bottom: 12px;
         }
 
-        .order-header {
+        .stat-box {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 1.2rem;
+            color: #38bdf8;
+        }
+
+        .stat-box p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .product-list-admin {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .product-item-admin {
+            display: flex;
             align-items: center;
-            margin-bottom: 8px;
+            gap: 8px;
+            background: #0f172a;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .product-item-admin img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .product-item-admin .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-item-admin .info h4 {
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-item-admin .info p {
+            font-size: 0.75rem;
+            color: #10b981;
             font-weight: bold;
         }
 
-        .order-detail {
-            font-size: 0.85rem;
-            margin-bottom: 4px;
-            color: #334155;
+        .action-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-edit, .btn-delete {
+            border: none;
+            padding: 4px 7px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .btn-edit { background: #f59e0b; }
+        .btn-delete { background: #ef4444; }
+
+        /* TABEL SCROLL KHUSUS PERANGKAT HP */
+        .order-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px; /* Diperlebar sedikit agar muat detail pembeli */
+        }
+
+        .order-table th, .order-table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+            vertical-align: top;
+        }
+
+        .order-table th {
+            color: var(--accent);
+            background: #0f172a;
+        }
+
+        .buyer-details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .buyer-name {
+            font-weight: bold;
+            color: #f8fafc;
+        }
+
+        .buyer-sub {
+            font-size: 0.7rem;
+            color: var(--text-muted);
         }
 
         .status-select {
-            margin-top: 8px;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid #cbd5e1;
-            font-size: 0.85rem;
-            width: 100%;
-            background: white;
-        }
-
-        /* MEDIA QUERIES MOBILE ADAPTATION */
-        @media (min-width: 900px) {
-            .admin-grid {
-                grid-template-columns: 1fr;
-            }
+            padding: 4px;
+            border-radius: 4px;
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid var(--primary);
+            font-size: 0.7rem;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>⚙️ Admin Dashboard - GadgetStore</h1>
-        <button class="btn-exit" onclick="window.location.href='index.html'">Keluar Admin</button>
+        <h1>⚡ GadgetStore <span class="admin-badge">Admin</span></h1>
+        <button class="btn-logout" onclick="window.location.href='index.html'">Logout</button>
     </header>
 
-    <div class="admin-grid">
+    <div class="container">
+        
+        <!-- Form Tambah / Edit Produk -->
         <div class="card">
-            <h2>📦 Kelola Pesanan & Pengiriman Masuk</h2>
-            <div id="adminOrdersList"></div>
+            <h2 id="formTitle">➕ Tambah Produk Baru</h2>
+            <form id="productForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="editProductId">
+                
+                <div class="form-group">
+                    <label for="nama">Nama Produk</label>
+                    <input type="text" id="nama" placeholder="Contoh: iPad Pro M2" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="harga">Harga Produk (Rp)</label>
+                    <input type="number" id="harga" placeholder="15000000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi Singkat</label>
+                    <textarea id="deskripsi" rows="2" placeholder="Spesifikasi & Detail" required></textarea>
+                </div>
+                
+                <!-- Upload Gambar -->
+                <div class="form-group">
+                    <label>Gambar Produk (URL atau File Local)</label>
+                    <div class="upload-options">
+                        <input type="text" id="gambarUrl" placeholder="Link/URL Gambar">
+                        <input type="file" id="gambarFile" accept="image/*" onchange="convertFileToBase64('gambarFile', 'gambarUrl')">
+                    </div>
+                </div>
+
+                <!-- Upload Video Demo -->
+                <div class="form-group">
+                    <label>Video Demo Produk (URL YouTube/Embed atau File Local)</label>
+                    <div class="upload-options">
+                        <input type="text" id="ytVideoUrl" placeholder="Link YouTube / Embed">
+                        <input type="file" id="ytVideoFile" accept="video/*" onchange="convertFileToBase64('ytVideoFile', 'ytVideoUrl')">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit" id="btnSubmit">Simpan Produk</button>
+                <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Batal Edit</button>
+            </form>
         </div>
+
+        <!-- Dashboard Analytics & Inventaris -->
+        <div class="card">
+            <h2>📊 Analytics & Inventaris</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <p>Total Produk</p>
+                    <h3 id="totalProductsCount">0</h3>
+                </div>
+                <div class="stat-box">
+                    <p>Total Pesanan</p>
+                    <h3 id="totalOrdersCount" style="color: #ec4899;">0</h3>
+                </div>
+            </div>
+
+            <h2>📦 Daftar Produk Aktif</h2>
+            <div class="product-list-admin" id="productListAdmin"></div>
+        </div>
+
+        <!-- Kelola Status Pengiriman -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>🚚 Kelola Pengiriman Customer</h2>
+            <div class="order-table-wrapper">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Detail Pembeli</th>
+                            <th>Alamat & Kontak</th>
+                            <th>Tanggal</th>
+                            <th>Barang</th>
+                            <th>Pembayaran</th>
+                            <th>Total</th>
+                            <th>Status Pengiriman</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersBody"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        function renderAdminOrders() {
-            const container = document.getElementById('adminOrdersList');
-            container.innerHTML = '';
+        // Konversi File Lokal ke Base64 (Gambar / Video)
+        function convertFileToBase64(fileInputId, targetUrlInputId) {
+            const fileInput = document.getElementById(fileInputId);
+            const targetInput = document.getElementById(targetUrlInputId);
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                
+                // Cek ukuran file untuk mencegah QuotaExceededError di LocalStorage (Max ~3MB disarankan)
+                if (file.size > 3 * 1024 * 1024) {
+                    alert('Ukuran file terlalu besar untuk LocalStorage! Maksimal disarankan ~3MB.');
+                }
 
-            const orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    targetInput.value = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function formatYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            if (url.startsWith('data:')) return url; // Menangani file lokal base64
+
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
+            }
+            return url;
+        }
+
+        let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [
+            {
+                id: 1,
+                nama: "Smartphone Premium X",
+                harga: 12000000,
+                deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core, Kamera 108MP.",
+                gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
+                ytVideo: "https://www.youtube.com/embed/L_LUpnjgPso"
+            },
+            {
+                id: 2,
+                nama: "Laptop Ultra Book Pro",
+                harga: 18500000,
+                deskripsi: "Layar 14 Retina 120Hz, RAM 16GB SSD 512GB, Baterai Tahan 18 Jam.",
+                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
+                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            }
+        ];
+
+        let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
+
+        function renderAdminProducts() {
+            const container = document.getElementById('productListAdmin');
+            const countElem = document.getElementById('totalProductsCount');
+            container.innerHTML = '';
+            countElem.innerText = products.length;
+
+            products.forEach((p, index) => {
+                const item = document.createElement('div');
+                item.className = 'product-item-admin';
+                item.innerHTML = `
+                    <img src="${p.gambar}" alt="${p.nama}">
+                    <div class="info">
+                        <h4>${p.nama}</h4>
+                        <p>Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="editProduct(${p.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteProduct(${index})">Hapus</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+
+            try {
+                localStorage.setItem('gadgetProducts', JSON.stringify(products));
+            } catch (e) {
+                alert('Gagal menyimpan ke LocalStorage: Ukuran gambar/video file lokal terlalu besar!');
+            }
+        }
+
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrdersBody');
+            const orderCountElem = document.getElementById('totalOrdersCount');
+            tbody.innerHTML = '';
+            orderCountElem.innerText = orders.length;
 
             if (orders.length === 0) {
-                container.innerHTML = '<p style="color:#64748b; text-align:center;">Belum ada pesanan masuk dari pembeli.</p>';
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk.</td></tr>`;
                 return;
             }
 
             orders.forEach((ord, index) => {
-                const itemsText = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
-                const pMethod = ord.paymentMethod || 'Bayar di Tempat (COD)';
-                const rName = ord.recipientName || ord.buyerName;
-                const loc = ord.location || 'Tidak dicantumkan';
-
-                const div = document.createElement('div');
-                div.className = 'order-item';
-                div.innerHTML = `
-                    <div class="order-header">
-                        <span>Order #${ord.id} (${ord.date})</span>
-                        <span style="color:#2563eb;">Rp ${Number(ord.total).toLocaleString('id-ID')}</span>
-                    </div>
-                    <div class="order-detail">👤 <strong>Akun Pembeli:</strong> ${ord.buyerName}</div>
-                    <div class="order-detail">📦 <strong>Nama Penerima:</strong> ${rName}</div>
-                    <div class="order-detail">📍 <strong>Alamat Pengiriman:</strong> ${loc}</div>
-                    <div class="order-detail">🛍️ <strong>Item:</strong> ${itemsText}</div>
-                    <div class="order-detail">💳 <strong>Metode Pembayaran:</strong> ${pMethod}</div>
-                    
-                    <div style="margin-top: 10px;">
-                        <label style="font-size:0.8rem; font-weight:bold;">Ubah Status Pesanan:</label>
+                const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${ord.id}</strong></td>
+                    <td>
+                        <div class="buyer-details">
+                            <span class="buyer-name">${ord.buyerName || 'Tanpa Nama'}</span>
+                            <span class="buyer-sub">📧 ${ord.buyerEmail || '-'}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="buyer-details">
+                            <span class="buyer-sub">📱 ${ord.buyerPhone || '-'}</span>
+                            <span class="buyer-sub">📍 ${ord.buyerAddress || '-'}</span>
+                        </div>
+                    </td>
+                    <td>${ord.date}</td>
+                    <td>${itemsSummary}</td>
+                    <td><span class="buyer-sub" style="color:#06b6d4;">${ord.paymentMethod || 'Transfer/E-Wallet'}</span></td>
+                    <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
+                    <td>
                         <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
-                            <option value="Sedang Diproses" ${ord.status === 'Sedang Diproses' ? 'selected' : ''}>⏳ Sedang Diproses</option>
-                            <option value="Dalam Perjalanan" ${ord.status === 'Dalam Perjalanan' ? 'selected' : ''}>🚚 Dalam Perjalanan</option>
-                            <option value="Sudah Sampai" ${ord.status === 'Sudah Sampai' ? 'selected' : ''}>✅ Sudah Sampai</option>
+                            <option value="Sedang Diproses" ${ord.status === 'Sedang Diproses' ? 'selected' : ''}>⏳ Diproses</option>
+                            <option value="Dalam Perjalanan" ${ord.status === 'Dalam Perjalanan' ? 'selected' : ''}>🚚 Perjalanan</option>
+                            <option value="Sudah Sampai" ${ord.status === 'Sudah Sampai' ? 'selected' : ''}>✅ Sampai</option>
                             <option value="Selesai" ${ord.status === 'Selesai' ? 'selected' : ''}>🎉 Selesai</option>
                         </select>
-                    </div>
+                    </td>
                 `;
-                container.appendChild(div);
+                tbody.appendChild(tr);
             });
         }
 
         function updateOrderStatus(index, newStatus) {
-            const orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
             orders[index].status = newStatus;
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-            alert(`Status Pesanan #${orders[index].id} diperbarui menjadi: ${newStatus}`);
-            renderAdminOrders();
+            alert(`Status pesanan #${orders[index].id} diperbarui: ${newStatus}`);
         }
 
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const editId = document.getElementById('editProductId').value;
+            let videoInput = document.getElementById('ytVideoUrl').value;
+            videoInput = formatYouTubeEmbedUrl(videoInput);
+
+            const productData = {
+                id: editId ? Number(editId) : Date.now(),
+                nama: document.getElementById('nama').value,
+                harga: Number(document.getElementById('harga').value),
+                deskripsi: document.getElementById('deskripsi').value,
+                gambar: document.getElementById('gambarUrl').value || 'https://via.placeholder.com/300',
+                ytVideo: videoInput
+            };
+
+            if (editId) {
+                const index = products.findIndex(p => p.id === Number(editId));
+                if (index !== -1) {
+                    products[index] = productData;
+                    alert('Produk berhasil diperbarui!');
+                }
+            } else {
+                products.push(productData);
+                alert('Produk baru berhasil ditambahkan!');
+            }
+
+            renderAdminProducts();
+            resetForm();
+        }
+
+        function editProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('editProductId').value = prod.id;
+            document.getElementById('nama').value = prod.nama;
+            document.getElementById('harga').value = prod.harga;
+            document.getElementById('deskripsi').value = prod.deskripsi;
+            document.getElementById('gambarUrl').value = prod.gambar;
+            document.getElementById('ytVideoUrl').value = prod.ytVideo;
+
+            document.getElementById('formTitle').innerText = '✏️ Edit Produk';
+            document.getElementById('btnSubmit').innerText = 'Update Produk';
+            document.getElementById('btnCancel').style.display = 'block';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('gambarFile').value = '';
+            document.getElementById('ytVideoFile').value = '';
+            document.getElementById('gambarUrl').value = '';
+            document.getElementById('ytVideoUrl').value = '';
+            document.getElementById('formTitle').innerText = '➕ Tambah Produk Baru';
+            document.getElementById('btnSubmit').innerText = 'Simpan Produk';
+            document.getElementById('btnCancel').style.display = 'none';
+        }
+
+        function deleteProduct(index) {
+            if(confirm('Yakin ingin menghapus produk ini?')) {
+                products.splice(index, 1);
+                renderAdminProducts();
+            }
+        }
+
+        renderAdminProducts();
         renderAdminOrders();
     </script>
 </body>
