@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport standar agar HP menyesuaikan layar otomatis -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GadgetStore Pro - Admin Panel</title>
     <style>
@@ -15,7 +14,6 @@
             --text-muted: #94a3b8;
         }
 
-        /* RESET TOTAL AGAR ELEMEN TIDAK MELUBER KELUAR HP */
         *, *::before, *::after {
             margin: 0;
             padding: 0;
@@ -35,7 +33,6 @@
             padding: 10px;
         }
 
-        /* HEADER RESPONSIVE */
         header {
             background: linear-gradient(135deg, #312e81, #1e1b4b);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -74,7 +71,6 @@
             font-size: 0.8rem;
         }
 
-        /* CONTAINER GRID LAYOUT */
         .container {
             width: 100%;
             display: flex;
@@ -119,10 +115,8 @@
         }
 
         .form-group input, 
-        .form-group textarea, 
-        .form-group select {
+        .form-group textarea {
             width: 100%;
-            max-width: 100%;
             padding: 10px;
             border-radius: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -130,14 +124,12 @@
             color: #fff;
             outline: none;
             font-size: 0.85rem;
-            display: block;
         }
 
         .upload-options {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            width: 100%;
         }
 
         input[type="file"] {
@@ -258,7 +250,7 @@
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
 
-        /* TABEL SCROLL KHUSUS PERANGKAT HP */
+        /* TABEL PENGIRIMAN CUSTOMER */
         .order-table-wrapper {
             width: 100%;
             overflow-x: auto;
@@ -268,11 +260,11 @@
         .order-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 700px; /* Diperlebar sedikit agar muat detail pembeli */
+            min-width: 850px;
         }
 
         .order-table th, .order-table td {
-            padding: 8px;
+            padding: 10px;
             text-align: left;
             border-bottom: 1px solid rgba(255,255,255,0.1);
             font-size: 0.75rem;
@@ -284,20 +276,32 @@
             background: #0f172a;
         }
 
-        .buyer-details {
+        .user-box {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
-        .buyer-name {
+        .user-name {
             font-weight: bold;
             color: #f8fafc;
+            font-size: 0.8rem;
         }
 
-        .buyer-sub {
+        .user-sub {
             font-size: 0.7rem;
             color: var(--text-muted);
+        }
+
+        .badge-gift {
+            display: inline-block;
+            background: #ec4899;
+            color: #fff;
+            font-size: 0.6rem;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-top: 2px;
+            width: fit-content;
         }
 
         .status-select {
@@ -363,7 +367,7 @@
             </form>
         </div>
 
-        <!-- Dashboard Analytics & Inventaris -->
+        <!-- Analytics & Inventaris -->
         <div class="card">
             <h2>📊 Analytics & Inventaris</h2>
             
@@ -382,18 +386,18 @@
             <div class="product-list-admin" id="productListAdmin"></div>
         </div>
 
-        <!-- Kelola Status Pengiriman -->
+        <!-- Tabel Kelola Pengiriman (Tampilan Pemesan & Penerima) -->
         <div class="card" style="grid-column: 1 / -1;">
             <h2>🚚 Kelola Pengiriman Customer</h2>
             <div class="order-table-wrapper">
                 <table class="order-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Detail Pembeli</th>
-                            <th>Alamat & Kontak</th>
-                            <th>Tanggal</th>
-                            <th>Barang</th>
+                            <th>ID Pesanan</th>
+                            <th>Pemesan (Pembayar)</th>
+                            <th>Penerima Paket</th>
+                            <th>Alamat & Kontak Penerima</th>
+                            <th>Item Barang</th>
                             <th>Pembayaran</th>
                             <th>Total</th>
                             <th>Status Pengiriman</th>
@@ -414,12 +418,9 @@
             
             if (fileInput.files && fileInput.files[0]) {
                 const file = fileInput.files[0];
-                
-                // Cek ukuran file untuk mencegah QuotaExceededError di LocalStorage (Max ~3MB disarankan)
                 if (file.size > 3 * 1024 * 1024) {
-                    alert('Ukuran file terlalu besar untuk LocalStorage! Maksimal disarankan ~3MB.');
+                    alert('Ukuran file terlalu besar! Maksimal disarankan ~3MB agar LocalStorage tidak penuh.');
                 }
-
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     targetInput.value = e.target.result;
@@ -430,7 +431,7 @@
 
         function formatYouTubeEmbedUrl(url) {
             if (!url) return '';
-            if (url.startsWith('data:')) return url; // Menangani file lokal base64
+            if (url.startsWith('data:')) return url;
 
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
             const match = url.match(regExp);
@@ -446,21 +447,28 @@
                 id: 1,
                 nama: "Smartphone Premium X",
                 harga: 12000000,
-                deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core, Kamera 108MP.",
+                deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core.",
                 gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
                 ytVideo: "https://www.youtube.com/embed/L_LUpnjgPso"
-            },
-            {
-                id: 2,
-                nama: "Laptop Ultra Book Pro",
-                harga: 18500000,
-                deskripsi: "Layar 14 Retina 120Hz, RAM 16GB SSD 512GB, Baterai Tahan 18 Jam.",
-                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
-                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
             }
         ];
 
-        let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
+        // Sample Data Pesanan dengan Skenario Pemesan A Kirim ke Penerima B
+        let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [
+            {
+                id: "ORD-9901",
+                buyerName: "Andi Saputra",               // Pembeli (A)
+                buyerEmail: "andi.saputra@email.com",
+                recipientName: "Budi Santoso",            // Penerima (B)
+                recipientPhone: "0812-3456-7890",
+                recipientAddress: "Jl. Pemuda No. 45, Semarang, Jawa Tengah",
+                date: "2026-08-12",
+                items: [{ nama: "Smartphone Premium X", qty: 1 }],
+                paymentMethod: "QRIS / E-Wallet",
+                total: 12000000,
+                status: "Sedang Diproses"
+            }
+        ];
 
         function renderAdminProducts() {
             const container = document.getElementById('productListAdmin');
@@ -488,7 +496,7 @@
             try {
                 localStorage.setItem('gadgetProducts', JSON.stringify(products));
             } catch (e) {
-                alert('Gagal menyimpan ke LocalStorage: Ukuran gambar/video file lokal terlalu besar!');
+                alert('Peringatan: Ukuran file lokal melebihi kapasitas LocalStorage!');
             }
         }
 
@@ -505,24 +513,33 @@
 
             orders.forEach((ord, index) => {
                 const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
+                
+                // Deteksi jika Pemesan (A) beda dengan Penerima (B)
+                const isGiftOrDropship = ord.recipientName && (ord.buyerName !== ord.recipientName);
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>#${ord.id}</strong></td>
+                    <td><strong>#${ord.id}</strong><br><span class="user-sub">${ord.date}</span></td>
                     <td>
-                        <div class="buyer-details">
-                            <span class="buyer-name">${ord.buyerName || 'Tanpa Nama'}</span>
-                            <span class="buyer-sub">📧 ${ord.buyerEmail || '-'}</span>
+                        <div class="user-box">
+                            <span class="user-name">👤 ${ord.buyerName || 'Tanpa Nama'}</span>
+                            <span class="user-sub">📧 ${ord.buyerEmail || '-'}</span>
                         </div>
                     </td>
                     <td>
-                        <div class="buyer-details">
-                            <span class="buyer-sub">📱 ${ord.buyerPhone || '-'}</span>
-                            <span class="buyer-sub">📍 ${ord.buyerAddress || '-'}</span>
+                        <div class="user-box">
+                            <span class="user-name" style="color: #38bdf8;">📦 ${ord.recipientName || ord.buyerName || '-'}</span>
+                            ${isGiftOrDropship ? '<span class="badge-gift">🎁 Kirim Hadiah / Dropship</span>' : ''}
                         </div>
                     </td>
-                    <td>${ord.date}</td>
+                    <td>
+                        <div class="user-box">
+                            <span class="user-sub">📱 ${ord.recipientPhone || ord.buyerPhone || '-'}</span>
+                            <span class="user-sub">📍 ${ord.recipientAddress || ord.buyerAddress || '-'}</span>
+                        </div>
+                    </td>
                     <td>${itemsSummary}</td>
-                    <td><span class="buyer-sub" style="color:#06b6d4;">${ord.paymentMethod || 'Transfer/E-Wallet'}</span></td>
+                    <td><span class="user-sub" style="color:#06b6d4;">${ord.paymentMethod || 'Transfer/E-Wallet'}</span></td>
                     <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
                     <td>
                         <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
@@ -540,7 +557,7 @@
         function updateOrderStatus(index, newStatus) {
             orders[index].status = newStatus;
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-            alert(`Status pesanan #${orders[index].id} diperbarui: ${newStatus}`);
+            alert(`Status pesanan #${orders[index].id} diperbarui menjadi: ${newStatus}`);
         }
 
         function handleFormSubmit(event) {
