@@ -313,22 +313,22 @@
             font-size: 0.85rem;
         }
 
-        /* METODE PEMBAYARAN STYLING */
-        .payment-section {
-            margin-top: 15px;
-            margin-bottom: 15px;
+        /* METODE PEMBAYARAN & INFORMASI PENGIRIMAN STYLING */
+        .shipping-section, .payment-section {
+            margin-top: 12px;
+            margin-bottom: 12px;
             text-align: left;
         }
 
-        .payment-section label {
+        .shipping-section label, .payment-section label {
             display: block;
             font-size: 0.85rem;
             font-weight: bold;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
             color: #1e293b;
         }
 
-        .payment-section select {
+        .shipping-section input, .shipping-section textarea, .payment-section select {
             width: 100%;
             padding: 8px 10px;
             border-radius: 6px;
@@ -336,6 +336,7 @@
             font-size: 0.85rem;
             outline: none;
             background: #f8fafc;
+            margin-bottom: 10px;
         }
 
         .cart-total {
@@ -441,7 +442,15 @@
             <h2>🛒 Keranjang Belanja</h2>
             <div id="cartItemsList" style="margin-top: 10px;"></div>
             
-            <!-- FITUR METODE PEMBAYARAN -->
+            <!-- INFORMASI PENGIRIMAN & METODE PEMBAYARAN -->
+            <div class="shipping-section" id="shippingSection">
+                <label for="recipientName">👤 Nama Penerima:</label>
+                <input type="text" id="recipientName" placeholder="Masukkan nama penerima paket">
+
+                <label for="shippingAddress">📍 Lokasi / Alamat Pengiriman:</label>
+                <textarea id="shippingAddress" rows="2" placeholder="Masukkan alamat lengkap pengiriman"></textarea>
+            </div>
+
             <div class="payment-section" id="paymentSection">
                 <label for="paymentMethod">💳 Metode Pembayaran:</label>
                 <select id="paymentMethod">
@@ -480,14 +489,9 @@
         // FUNGSI MEMUAT PRODUK PERMANEN DARI PRODUCTS.JSON
         async function fetchProducts() {
             try {
-                // Mengambil data permanen dari products.json
                 const response = await fetch('products.json');
                 const jsonProducts = await response.json();
-
-                // Mengambil data tambahan dari localStorage (jika ditambahkan dari admin lokal)
                 const localProducts = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
-
-                // Menggabungkan produk permanen dari json dengan produk dari local storage
                 products = [...jsonProducts, ...localProducts];
                 renderBuyerProducts();
             } catch (error) {
@@ -550,8 +554,6 @@
 
             if (p.ytVideo) {
                 let embedUrl = p.ytVideo;
-                
-                // Mengubah otomatis link biasa/youtu.be menjadi link /embed/
                 if (embedUrl.includes('youtu.be/')) {
                     const videoId = embedUrl.split('youtu.be/')[1].split('?')[0];
                     embedUrl = `https://www.youtube.com/embed/${videoId}`;
@@ -606,14 +608,17 @@
         function openCartModal() {
             const cartList = document.getElementById('cartItemsList');
             const paymentSection = document.getElementById('paymentSection');
+            const shippingSection = document.getElementById('shippingSection');
             cartList.innerHTML = '';
             let total = 0;
 
             if(cart.length === 0) {
                 cartList.innerHTML = '<p style="color:#64748b; text-align:center;">Keranjang Anda masih kosong.</p>';
                 paymentSection.style.display = 'none';
+                shippingSection.style.display = 'none';
             } else {
                 paymentSection.style.display = 'block';
+                shippingSection.style.display = 'block';
                 cart.forEach(item => {
                     const subtotal = item.harga * item.qty;
                     total += subtotal;
@@ -653,24 +658,38 @@
                 return;
             }
 
+            const recipientName = document.getElementById('recipientName').value.trim();
+            const shippingAddress = document.getElementById('shippingAddress').value.trim();
+
+            if (!recipientName) {
+                alert('Silakan masukkan nama penerima!');
+                return;
+            }
+            if (!shippingAddress) {
+                alert('Silakan masukkan alamat pengiriman!');
+                return;
+            }
+
             const paymentMethod = document.getElementById('paymentMethod').value;
             const orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
             const totalAmount = cart.reduce((sum, item) => sum + (item.harga * item.qty), 0);
 
             const newOrder = {
                 id: Math.floor(100000 + Math.random() * 900000),
-                buyerName: buyerName,
+                buyerName: buyerName,          // Nama Akun Pembeli
+                recipientName: recipientName,  // Nama Penerima
+                location: shippingAddress,    // Lokasi / Alamat
                 date: new Date().toLocaleDateString('id-ID'),
                 items: [...cart],
                 total: totalAmount,
-                paymentMethod: paymentMethod, // Menyimpan metode pembayaran pilihan pembeli
+                paymentMethod: paymentMethod,  // Metode Pembayaran
                 status: 'Sedang Diproses'
             };
 
             orders.push(newOrder);
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
 
-            alert(`Pesanan #${newOrder.id} berhasil dicheckout!\nMetode Pembayaran: ${paymentMethod}`);
+            alert(`Pesanan #${newOrder.id} berhasil dicheckout!\nPenerima: ${recipientName}\nAlamat: ${shippingAddress}\nMetode Pembayaran: ${paymentMethod}`);
             
             cart = [];
             localStorage.removeItem('buyerCart');
@@ -698,6 +717,8 @@
 
                     const itemsText = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
                     const pMethod = ord.paymentMethod || 'Bayar di Tempat (COD)';
+                    const rName = ord.recipientName || ord.buyerName;
+                    const loc = ord.location || 'Tidak dicantumkan';
 
                     const div = document.createElement('div');
                     div.className = 'order-card-buyer';
@@ -707,6 +728,9 @@
                             <span class="status-badge ${badgeClass}">${icon} ${ord.status}</span>
                         </div>
                         <p style="font-size:0.75rem; color:#64748b; margin-bottom:3px;">Tanggal: ${ord.date}</p>
+                        <p style="font-size:0.8rem; margin-bottom:3px;"><strong>Pembeli:</strong> ${ord.buyerName}</p>
+                        <p style="font-size:0.8rem; margin-bottom:3px;"><strong>Penerima:</strong> ${rName}</p>
+                        <p style="font-size:0.8rem; margin-bottom:3px;"><strong>Lokasi:</strong> ${loc}</p>
                         <p style="font-size:0.8rem; margin-bottom:3px;"><strong>Barang:</strong> ${itemsText}</p>
                         <p style="font-size:0.8rem; margin-bottom:3px;"><strong>Pembayaran:</strong> ${pMethod}</p>
                         <p style="font-size:0.85rem; color:#2563eb; font-weight:bold;">Total: Rp ${Number(ord.total).toLocaleString('id-ID')}</p>
@@ -722,7 +746,6 @@
             document.getElementById('statusModal').style.display = 'none';
         }
 
-        // Panggil fungsi mengambil data dari products.json
         fetchProducts();
     </script>
 </body>
