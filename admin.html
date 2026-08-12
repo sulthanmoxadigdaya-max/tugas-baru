@@ -1,232 +1,591 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - GadgetStore</title>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: #f1f5f9; color: #334155; padding-bottom: 50px; }
-    
-    header { background-color: #0f172a; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-    header h1 { font-size: 1.3rem; }
-    .nav-link { color: #38bdf8; text-decoration: none; font-size: 0.9rem; }
-    
-    .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-    .section-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; }
-    .section-card h2 { margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; font-size: 1.2rem; color: #1e293b; }
+    <meta charset="UTF-8">
+    <!-- Viewport standar agar HP menyesuaikan layar otomatis -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GadgetStore Pro - Admin Panel</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --accent: #06b6d4;
+            --bg-dark: #0f172a;
+            --card-bg: #1e293b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-    /* Form Admin */
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 15px; }
-    input, select, textarea { padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; width: 100%; }
-    .btn { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.9rem; }
-    .btn-primary { background-color: #2563eb; color: white; }
-    .btn-danger { background-color: #ef4444; color: white; padding: 5px 10px; font-size: 0.8rem; }
+        /* RESET TOTAL AGAR ELEMEN TIDAK MELUBER KELUAR HP */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
 
-    /* Table Styles */
-    .table-responsive { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
-    th { background-color: #f8fafc; font-weight: 600; color: #475569; }
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            overflow-x: hidden; /* Mencegah geser kanan-kiri yang merusak layout */
+        }
 
-    /* Badge & Formatting */
-    .badge-payment { background-color: #e0f2fe; color: #0369a1; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 0.8rem; display: inline-block; }
-    .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }
-    .status-pending { background-color: #fef3c7; color: #d97706; }
-    .status-diproses { background-color: #dbeafe; color: #1d4ed8; }
-    .status-dikirim { background-color: #e0e7ff; color: #4338ca; }
-    .status-selesai { background-color: #dcfce7; color: #15803d; }
-    .status-dibatalkan { background-color: #fee2e2; color: #b91c1c; }
-    .item-list { font-size: 0.85rem; color: #64748b; margin-top: 4px; }
-  </style>
+        body {
+            padding: 10px;
+        }
+
+        /* HEADER RESPONSIVE */
+        header {
+            background: linear-gradient(135deg, #312e81, #1e1b4b);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 15px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+
+        header h1 {
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            font-size: 0.65rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            text-transform: uppercase;
+        }
+
+        .btn-logout {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        /* CONTAINER GRID LAYOUT */
+        .container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+            header h1 { font-size: 1.2rem; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            width: 100%;
+        }
+
+        .card h2 {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            margin-bottom: 4px;
+            color: var(--text-muted);
+        }
+
+        /* MEMAKSA INPUT TIDAK MELEBIHI LEBAR LAYAR */
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0f172a;
+            color: #fff;
+            outline: none;
+            font-size: 0.85rem;
+            display: block;
+        }
+
+        .upload-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        input[type="file"] {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            width: 100%;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-cancel {
+            width: 100%;
+            padding: 10px;
+            background: #64748b;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .stat-box {
+            background: #0f172a;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box h3 {
+            font-size: 1.2rem;
+            color: #38bdf8;
+        }
+
+        .stat-box p {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .product-list-admin {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .product-item-admin {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #0f172a;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .product-item-admin img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .product-item-admin .info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-item-admin .info h4 {
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-item-admin .info p {
+            font-size: 0.75rem;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 4px;
+        }
+
+        .btn-edit, .btn-delete {
+            border: none;
+            padding: 4px 7px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .btn-edit { background: #f59e0b; }
+        .btn-delete { background: #ef4444; }
+
+        /* TABEL SCROLL KHUSUS PERANGKAT HP */
+        .order-table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 550px;
+        }
+
+        .order-table th, .order-table td {
+            padding: 6px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.75rem;
+        }
+
+        .order-table th {
+            color: var(--accent);
+            background: #0f172a;
+        }
+
+        .status-select {
+            padding: 4px;
+            border-radius: 4px;
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid var(--primary);
+            font-size: 0.7rem;
+        }
+
+        .payment-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>⚙️ Admin Panel - GadgetStore</h1>
-    <a href="index.html" class="nav-link">&larr; Kembali ke Toko Pembeli</a>
-  </header>
+    <header>
+        <h1>⚡ GadgetStore <span class="admin-badge">Admin</span></h1>
+        <button class="btn-logout" onclick="window.location.href='index.html'">Logout</button>
+    </header>
 
-  <div class="container">
+    <div class="container">
+        
+        <!-- Form Tambah / Edit Produk -->
+        <div class="card">
+            <h2 id="formTitle">➕ Tambah Produk Baru</h2>
+            <form id="productForm" onsubmit="handleFormSubmit(event)">
+                <input type="hidden" id="editProductId">
+                
+                <div class="form-group">
+                    <label for="nama">Nama Produk</label>
+                    <input type="text" id="nama" placeholder="Contoh: iPad Pro M2" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="harga">Harga Produk (Rp)</label>
+                    <input type="number" id="harga" placeholder="15000000" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="deskripsi">Deskripsi Singkat</label>
+                    <textarea id="deskripsi" rows="2" placeholder="Spesifikasi & Detail" required></textarea>
+                </div>
+                
+                <!-- Upload Gambar -->
+                <div class="form-group">
+                    <label>Gambar Produk</label>
+                    <div class="upload-options">
+                        <input type="text" id="gambarUrl" placeholder="Link/URL Gambar">
+                        <input type="file" id="gambarFile" accept="image/*" onchange="convertFileToBase64('gambarFile', 'gambarUrl')">
+                    </div>
+                </div>
 
-    <!-- SEKSI 1: KELOLA PESANAN MASUK -->
-    <div class="section-card">
-      <h2>📦 Daftar Pesanan Masuk</h2>
-      <div class="table-responsive">
-        <table>
-          <thead>
-            <tr>
-              <th>ID Pesanan</th>
-              <th>Tanggal</th>
-              <th>Pembeli & Alamat</th>
-              <th>Detail Item</th>
-              <th>Metode Pembayaran</th> <!-- KOLOM METODE PEMBAYARAN -->
-              <th>Total</th>
-              <th>Status Pesanan</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="orderTableBody">
-            <!-- Data pesanan di-render di sini -->
-          </tbody>
-        </table>
-      </div>
-    </div>
+                <!-- Upload Video Demo -->
+                <div class="form-group">
+                    <label>Video Demo Produk</label>
+                    <div class="upload-options">
+                        <input type="text" id="ytVideoUrl" placeholder="Link YouTube / Embed">
+                        <input type="file" id="ytVideoFile" accept="video/*" onchange="convertFileToBase64('ytVideoFile', 'ytVideoUrl')">
+                    </div>
+                </div>
 
-    <!-- SEKSI 2: KELOLA KATALOG PRODUK -->
-    <div class="section-card">
-      <h2>🏷️ Manajemen Produk Toko</h2>
-      
-      <form id="productForm" onsubmit="handleSaveProduct(event)">
-        <div class="form-grid">
-          <input type="text" id="prodName" placeholder="Nama Produk" required>
-          <input type="number" id="prodPrice" placeholder="Harga (Rp)" required>
-          <input type="url" id="prodImage" placeholder="URL Gambar Produk (https://...)" required>
+                <button type="submit" class="btn-submit" id="btnSubmit">Simpan Produk</button>
+                <button type="button" class="btn-cancel" id="btnCancel" onclick="resetForm()">Batal Edit</button>
+            </form>
         </div>
-        <button type="submit" class="btn btn-primary">+ Tambah Produk Baru</button>
-      </form>
 
-      <div class="table-responsive" style="margin-top: 15px;">
-        <table>
-          <thead>
-            <tr>
-              <th>Gambar</th>
-              <th>Nama Produk</th>
-              <th>Harga</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="productAdminTableBody">
-            <!-- Data produk di-render di sini -->
-          </tbody>
-        </table>
-      </div>
+        <!-- Dashboard Analytics & Inventaris -->
+        <div class="card">
+            <h2>📊 Analytics & Inventaris</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <p>Total Produk</p>
+                    <h3 id="totalProductsCount">0</h3>
+                </div>
+                <div class="stat-box">
+                    <p>Total Pesanan</p>
+                    <h3 id="totalOrdersCount" style="color: #ec4899;">0</h3>
+                </div>
+            </div>
+
+            <h2>📦 Daftar Produk Aktif</h2>
+            <div class="product-list-admin" id="productListAdmin"></div>
+        </div>
+
+        <!-- Kelola Status Pengiriman & Pembayaran -->
+        <div class="card" style="grid-column: 1 / -1;">
+            <h2>🚚 Kelola Pengiriman & Pembayaran Customer</h2>
+            <div class="order-table-wrapper">
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Pembeli</th>
+                            <th>Tanggal</th>
+                            <th>Barang</th>
+                            <th>Total</th>
+                            <th>Metode Bayar</th>
+                            <th>Status Pengiriman</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminOrdersBody"></tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
-  </div>
+    <script>
+        function convertFileToBase64(fileInputId, targetUrlInputId) {
+            const fileInput = document.getElementById(fileInputId);
+            const targetInput = document.getElementById(targetUrlInputId);
+            
+            if (fileInput.files && fileInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    targetInput.value = e.target.result;
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            }
+        }
 
-  <script>
-    // --- BACA DATA DARI LOCALSTORAGE ---
-    let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
-    let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
+        function formatYouTubeEmbedUrl(url) {
+            if (!url) return '';
+            if (url.startsWith('data:video/')) return url;
 
-    // --- RENDER DAFTAR PESANAN MASUK ---
-    function renderAdminOrders() {
-      const tableBody = document.getElementById('orderTableBody');
-      orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|shorts\/)([^#\&\?]*).*/;
+            const match = url.match(regExp);
 
-      if (orders.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk.</td></tr>';
-        return;
-      }
+            if (match && match[2].length === 11) {
+                return `https://www.youtube.com/embed/${match[2]}`;
+            }
+            return url;
+        }
 
-      tableBody.innerHTML = orders.map((order, index) => {
-        const itemsDetail = order.items 
-          ? order.items.map(i => `- ${i.name} (Rp ${Number(i.price).toLocaleString('id-ID')})`).join('<br>')
-          : '-';
+        let products = JSON.parse(localStorage.getItem('gadgetProducts')) || [
+            {
+                id: 1,
+                nama: "Smartphone Premium X",
+                harga: 12000000,
+                deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core, Kamera 108MP.",
+                gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
+                ytVideo: "https://www.youtube.com/embed/L_LUpnjgPso"
+            },
+            {
+                id: 2,
+                nama: "Laptop Ultra Book Pro",
+                harga: 18500000,
+                deskripsi: "Layar 14 Retina 120Hz, RAM 16GB SSD 512GB, Baterai Tahan 18 Jam.",
+                gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
+                ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
+            }
+        ];
 
-        return `
-          <tr>
-            <td><strong>${order.id}</strong></td>
-            <td><small>${order.date}</small></td>
-            <td>
-              <strong>${order.buyerName}</strong><br>
-              <small>📞 ${order.phone || '-'}</small><br>
-              <small style="color:#64748b;">📍 ${order.address}</small>
-            </td>
-            <td><div class="item-list">${itemsDetail}</div></td>
-            <td>
-              <!-- TAMPILAN BADGE METODE PEMBAYARAN -->
-              <span class="badge-payment">💳 ${order.paymentMethod || 'Belum Ditentukan'}</span>
-            </td>
-            <td><strong>Rp ${Number(order.totalPrice || 0).toLocaleString('id-ID')}</strong></td>
-            <td>
-              <select onchange="updateOrderStatus(${index}, this.value)">
-                <option value="Pending" ${order.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                <option value="Diproses" ${order.status === 'Diproses' ? 'selected' : ''}>Diproses</option>
-                <option value="Dikirim" ${order.status === 'Dikirim' ? 'selected' : ''}>Dikirim</option>
-                <option value="Selesai" ${order.status === 'Selesai' ? 'selected' : ''}>Selesai</option>
-                <option value="Dibatalkan" ${order.status === 'Dibatalkan' ? 'selected' : ''}>Dibatalkan</option>
-              </select>
-            </td>
-            <td>
-              <button class="btn btn-danger" onclick="deleteOrder(${index})">Hapus</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
-    }
+        let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
 
-    // Update Status Pesanan
-    function updateOrderStatus(index, newStatus) {
-      orders[index].status = newStatus;
-      localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-      renderAdminOrders();
-    }
+        function renderAdminProducts() {
+            const container = document.getElementById('productListAdmin');
+            const countElem = document.getElementById('totalProductsCount');
+            container.innerHTML = '';
+            countElem.innerText = products.length;
 
-    // Hapus Pesanan
-    function deleteOrder(index) {
-      if (confirm('Apakah Anda yakin ingin menghapus pesanan ini?')) {
-        orders.splice(index, 1);
-        localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-        renderAdminOrders();
-      }
-    }
+            products.forEach((p, index) => {
+                const item = document.createElement('div');
+                item.className = 'product-item-admin';
+                item.innerHTML = `
+                    <img src="${p.gambar}" alt="${p.nama}">
+                    <div class="info">
+                        <h4>${p.nama}</h4>
+                        <p>Rp ${Number(p.harga).toLocaleString('id-ID')}</p>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-edit" onclick="editProduct(${p.id})">Edit</button>
+                        <button class="btn-delete" onclick="deleteProduct(${index})">Hapus</button>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
 
-    // --- MANAJEMEN PRODUK ---
-    function renderAdminProducts() {
-      const tableBody = document.getElementById('productAdminTableBody');
-      products = JSON.parse(localStorage.getItem('gadgetProducts')) || [];
+            localStorage.setItem('gadgetProducts', JSON.stringify(products));
+        }
 
-      if (products.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Tidak ada produk.</td></tr>';
-        return;
-      }
+        function renderAdminOrders() {
+            const tbody = document.getElementById('adminOrdersBody');
+            const orderCountElem = document.getElementById('totalOrdersCount');
+            tbody.innerHTML = '';
+            orderCountElem.innerText = orders.length;
 
-      tableBody.innerHTML = products.map((p, index) => `
-        <tr>
-          <td><img src="${p.image}" width="50" height="50" style="object-fit:cover; border-radius:4px;"></td>
-          <td>${p.name}</td>
-          <td>Rp ${Number(p.price).toLocaleString('id-ID')}</td>
-          <td>
-            <button class="btn btn-danger" onclick="deleteProduct(${index})">Hapus</button>
-          </td>
-        </tr>
-      `).join('');
-    }
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk.</td></tr>`;
+                return;
+            }
 
-    function handleSaveProduct(event) {
-      event.preventDefault();
-      const name = document.getElementById('prodName').value;
-      const price = document.getElementById('prodPrice').value;
-      const image = document.getElementById('prodImage').value;
+            orders.forEach((ord, index) => {
+                const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
+                
+                // Ambil metode pembayaran (fallback ke 'Transfer Bank' jika data lama tidak punya)
+                const paymentMethod = ord.paymentMethod || ord.metodePembayaran || 'Transfer Bank';
 
-      const newProduct = {
-        id: Date.now(),
-        name: name,
-        price: Number(price),
-        image: image
-      };
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${ord.id}</strong></td>
+                    <td>${ord.buyerName}</td>
+                    <td>${ord.date}</td>
+                    <td>${itemsSummary}</td>
+                    <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
+                    <td><span class="payment-badge">💳 ${paymentMethod}</span></td>
+                    <td>
+                        <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
+                            <option value="Sedang Diproses" ${ord.status === 'Sedang Diproses' ? 'selected' : ''}>⏳ Diproses</option>
+                            <option value="Dalam Perjalanan" ${ord.status === 'Dalam Perjalanan' ? 'selected' : ''}>🚚 Perjalanan</option>
+                            <option value="Sudah Sampai" ${ord.status === 'Sudah Sampai' ? 'selected' : ''}>✅ Sampai</option>
+                            <option value="Selesai" ${ord.status === 'Selesai' ? 'selected' : ''}>🎉 Selesai</option>
+                        </select>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
 
-      products.push(newProduct);
-      localStorage.setItem('gadgetProducts', JSON.stringify(products));
-      
-      document.getElementById('productForm').reset();
-      renderAdminProducts();
-      alert('Produk berhasil ditambahkan!');
-    }
+        function updateOrderStatus(index, newStatus) {
+            orders[index].status = newStatus;
+            localStorage.setItem('gadgetOrders', JSON.stringify(orders));
+            alert(`Status pesanan #${orders[index].id} diperbarui: ${newStatus}`);
+        }
 
-    function deleteProduct(index) {
-      if (confirm('Hapus produk ini dari katalog?')) {
-        products.splice(index, 1);
-        localStorage.setItem('gadgetProducts', JSON.stringify(products));
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const editId = document.getElementById('editProductId').value;
+            let videoInput = document.getElementById('ytVideoUrl').value;
+            videoInput = formatYouTubeEmbedUrl(videoInput);
+
+            const productData = {
+                id: editId ? Number(editId) : Date.now(),
+                nama: document.getElementById('nama').value,
+                harga: Number(document.getElementById('harga').value),
+                deskripsi: document.getElementById('deskripsi').value,
+                gambar: document.getElementById('gambarUrl').value || 'https://via.placeholder.com/300',
+                ytVideo: videoInput
+            };
+
+            if (editId) {
+                const index = products.findIndex(p => p.id === Number(editId));
+                if (index !== -1) {
+                    products[index] = productData;
+                    alert('Produk berhasil diperbarui!');
+                }
+            } else {
+                products.push(productData);
+                alert('Produk baru berhasil ditambahkan!');
+            }
+
+            renderAdminProducts();
+            resetForm();
+        }
+
+        function editProduct(id) {
+            const prod = products.find(p => p.id === id);
+            if (!prod) return;
+
+            document.getElementById('editProductId').value = prod.id;
+            document.getElementById('nama').value = prod.nama;
+            document.getElementById('harga').value = prod.harga;
+            document.getElementById('deskripsi').value = prod.deskripsi;
+            document.getElementById('gambarUrl').value = prod.gambar;
+            document.getElementById('ytVideoUrl').value = prod.ytVideo;
+
+            document.getElementById('formTitle').innerText = '✏️ Edit Produk';
+            document.getElementById('btnSubmit').innerText = 'Update Produk';
+            document.getElementById('btnCancel').style.display = 'block';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('gambarFile').value = '';
+            document.getElementById('ytVideoFile').value = '';
+            document.getElementById('formTitle').innerText = '➕ Tambah Produk Baru';
+            document.getElementById('btnSubmit').innerText = 'Simpan Produk';
+            document.getElementById('btnCancel').style.display = 'none';
+        }
+
+        function deleteProduct(index) {
+            if(confirm('Yakin ingin menghapus produk ini?')) {
+                products.splice(index, 1);
+                renderAdminProducts();
+            }
+        }
+
         renderAdminProducts();
-      }
-    }
-
-    // Inisialisasi awal saat halaman dibuka
-    renderAdminOrders();
-    renderAdminProducts();
-  </script>
+        renderAdminOrders();
+    </script>
 </body>
 </html>
