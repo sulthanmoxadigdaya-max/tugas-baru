@@ -129,6 +129,7 @@
             font-size: 0.9rem;
         }
 
+        /* GRID PRODUK RESPONSIF DESKTOP & MOBILE */
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -144,6 +145,11 @@
             display: flex;
             flex-direction: column;
             border: 1px solid #e2e8f0;
+            transition: transform 0.2s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
         }
 
         .product-card img {
@@ -209,12 +215,6 @@
             gap: 15px;
         }
 
-        @media (max-width: 768px) {
-            .modal-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
         .close-modal {
             position: absolute;
             top: 10px;
@@ -222,6 +222,7 @@
             font-size: 1.6rem;
             cursor: pointer;
             color: #64748b;
+            z-index: 10;
         }
 
         .modal-left img {
@@ -383,6 +384,55 @@
             padding: 10px;
             margin-bottom: 10px;
         }
+
+        /* MEDIA QUERIES UNTUK TAMPILAN HP (MOBILE) */
+        @media (max-width: 768px) {
+            header {
+                padding: 10px 12px;
+            }
+
+            header h1 {
+                font-size: 1rem;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .product-card img {
+                height: 120px;
+            }
+
+            .product-card h3 {
+                font-size: 0.85rem;
+            }
+
+            .product-card .price {
+                font-size: 0.9rem;
+            }
+
+            .modal-content {
+                grid-template-columns: 1fr;
+                max-height: 95vh;
+                padding: 15px;
+                border-radius: 12px;
+            }
+
+            .modal-overlay {
+                align-items: flex-end; /* Efek Bottom Sheet di Mobile */
+                padding: 0;
+            }
+
+            .cart-modal {
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -486,7 +536,7 @@
         let cart = JSON.parse(localStorage.getItem('buyerCart')) || [];
         let selectedProduct = null;
 
-        // FUNGSI MEMUAT PRODUK PERMANEN DARI PRODUCTS.JSON
+        // MEMUAT PRODUK PERMANEN DARI PRODUCTS.JSON & LOCAL STORAGE
         async function fetchProducts() {
             try {
                 const response = await fetch('products.json');
@@ -612,6 +662,12 @@
             cartList.innerHTML = '';
             let total = 0;
 
+            // Mengisi otomatis nama penerima dengan nama akun pembeli jika belum diisi
+            const recipientInput = document.getElementById('recipientName');
+            if (!recipientInput.value) {
+                recipientInput.value = buyerName;
+            }
+
             if(cart.length === 0) {
                 cartList.innerHTML = '<p style="color:#64748b; text-align:center;">Keranjang Anda masih kosong.</p>';
                 paymentSection.style.display = 'none';
@@ -677,8 +733,8 @@
             const newOrder = {
                 id: Math.floor(100000 + Math.random() * 900000),
                 buyerName: buyerName,          // Nama Akun Pembeli
-                recipientName: recipientName,  // Nama Penerima
-                location: shippingAddress,    // Lokasi / Alamat
+                recipientName: recipientName,  // Nama Penerima Paket
+                location: shippingAddress,     // Alamat
                 date: new Date().toLocaleDateString('id-ID'),
                 items: [...cart],
                 total: totalAmount,
