@@ -527,6 +527,21 @@
 
         let orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
 
+        // Fungsi pembantu untuk mengambil Nama Penerima/Pembeli dari berbagai variasi properti
+        function getBuyerName(ord) {
+            return ord.buyerName || ord.namaPembeli || ord.namaPenerima || ord.pembeli || ord.customerName || ord.nama || ord.name || 'Tanpa Nama (Customer)';
+        }
+
+        // Fungsi pembantu untuk mengamankan Alamat
+        function getBuyerAddress(ord) {
+            return ord.address || ord.alamat || ord.alamatLengkap || ord.shippingAddress || 'Alamat tidak diisi';
+        }
+
+        // Fungsi pembantu untuk mengamankan No HP
+        function getBuyerPhone(ord) {
+            return ord.phone || ord.telepon || ord.noHp || ord.hp || ord.noTelp || 'Tidak ada nomor HP';
+        }
+
         function renderAdminProducts() {
             const container = document.getElementById('productListAdmin');
             const countElem = document.getElementById('totalProductsCount');
@@ -566,16 +581,20 @@
             }
 
             orders.forEach((ord, index) => {
-                const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty || 1}x)`).join(', ');
-                const paymentMethod = ord.paymentMethod || ord.metodePembayaran || 'Transfer Bank';
+                const itemsSummary = Array.isArray(ord.items) 
+                    ? ord.items.map(i => `${i.nama || i.name || 'Produk'} (${i.qty || 1}x)`).join(', ')
+                    : (ord.productName || '1x Produk');
+                
+                const paymentMethod = ord.paymentMethod || ord.metodePembayaran || ord.metodeBayar || 'Transfer Bank';
+                const buyerName = getBuyerName(ord);
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>#${ord.id}</strong></td>
-                    <td>${ord.buyerName || 'Pembeli'}</td>
-                    <td>${ord.date || '-'}</td>
+                    <td><strong>#${ord.id || (index + 1)}</strong></td>
+                    <td>${buyerName}</td>
+                    <td>${ord.date || ord.tanggal || '-'}</td>
                     <td>${itemsSummary}</td>
-                    <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
+                    <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total || ord.totalHarga || 0).toLocaleString('id-ID')}</td>
                     <td><span class="payment-badge">💳 ${paymentMethod}</span></td>
                     <td>
                         <select class="status-select" onchange="updateOrderStatus(${index}, this.value)">
@@ -596,7 +615,7 @@
         function updateOrderStatus(index, newStatus) {
             orders[index].status = newStatus;
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-            alert(`Status pesanan #${orders[index].id} diperbarui menjadi: ${newStatus}`);
+            alert(`Status pesanan #${orders[index].id || (index + 1)} diperbarui menjadi: ${newStatus}`);
         }
 
         function showOrderDetail(index) {
@@ -604,26 +623,35 @@
             const modal = document.getElementById('orderModal');
             const body = document.getElementById('modalBody');
 
-            const itemsListHtml = ord.items.map(i => `
-                <li style="margin-bottom: 4px;">
-                    <strong>${i.nama}</strong> - ${i.qty || 1} x Rp ${Number(i.harga).toLocaleString('id-ID')}
-                </li>
-            `).join('');
+            const buyerName = getBuyerName(ord);
+            const buyerAddress = getBuyerAddress(ord);
+            const buyerPhone = getBuyerPhone(ord);
+
+            let itemsListHtml = '';
+            if (Array.isArray(ord.items) && ord.items.length > 0) {
+                itemsListHtml = ord.items.map(i => `
+                    <li style="margin-bottom: 4px;">
+                        <strong>${i.nama || i.name || 'Produk'}</strong> - ${i.qty || 1} x Rp ${Number(i.harga || i.price || 0).toLocaleString('id-ID')}
+                    </li>
+                `).join('');
+            } else {
+                itemsListHtml = `<li><strong>${ord.productName || 'Produk'}</strong> - 1 x Rp ${Number(ord.total || 0).toLocaleString('id-ID')}</li>`;
+            }
 
             body.innerHTML = `
-                <p><strong>ID Pesanan:</strong> #${ord.id}</p>
-                <p><strong>Nama Pembeli:</strong> ${ord.buyerName || '-'}</p>
-                <p><strong>Tanggal:</strong> ${ord.date || '-'}</p>
-                <p><strong>No. HP/Telepon:</strong> ${ord.phone || '-'}</p>
-                <p><strong>Alamat Pengiriman:</strong> ${ord.address || '-'}</p>
-                <p><strong>Metode Pembayaran:</strong> ${ord.paymentMethod || ord.metodePembayaran || 'Transfer Bank'}</p>
+                <p><strong>ID Pesanan:</strong> #${ord.id || (index + 1)}</p>
+                <p><strong>Nama Penerima/Pembeli:</strong> <span style="color: #38bdf8; font-weight: bold;">${buyerName}</span></p>
+                <p><strong>Tanggal:</strong> ${ord.date || ord.tanggal || '-'}</p>
+                <p><strong>No. HP/Telepon:</strong> ${buyerPhone}</p>
+                <p><strong>Alamat Pengiriman:</strong> ${buyerAddress}</p>
+                <p><strong>Metode Pembayaran:</strong> ${ord.paymentMethod || ord.metodePembayaran || ord.metodeBayar || 'Transfer Bank'}</p>
                 <p><strong>Status Saat Ini:</strong> ${ord.status || 'Sedang Diproses'}</p>
                 <hr style="border-color: rgba(255,255,255,0.1); margin: 10px 0;">
                 <p><strong>Daftar Item:</strong></p>
                 <ul style="padding-left: 18px; font-size: 0.8rem; color: #cbd5e1;">
                     ${itemsListHtml}
                 </ul>
-                <p style="margin-top: 10px;"><strong>Total Biaya:</strong> <span style="color: #10b981;">Rp ${Number(ord.total).toLocaleString('id-ID')}</span></p>
+                <p style="margin-top: 10px;"><strong>Total Biaya:</strong> <span style="color: #10b981; font-weight: bold;">Rp ${Number(ord.total || ord.totalHarga || 0).toLocaleString('id-ID')}</span></p>
             `;
 
             modal.style.display = 'flex';
