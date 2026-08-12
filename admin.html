@@ -28,7 +28,7 @@
             max-width: 100vw;
             background-color: var(--bg-dark);
             color: var(--text-light);
-            overflow-x: hidden; /* Mencegah geser kanan-kiri yang merusak layout */
+            overflow-x: hidden;
         }
 
         body {
@@ -246,7 +246,7 @@
             gap: 4px;
         }
 
-        .btn-edit, .btn-delete {
+        .btn-edit, .btn-delete, .btn-detail {
             border: none;
             padding: 4px 7px;
             border-radius: 4px;
@@ -258,6 +258,7 @@
 
         .btn-edit { background: #f59e0b; }
         .btn-delete { background: #ef4444; }
+        .btn-detail { background: #3b82f6; }
 
         /* TABEL SCROLL KHUSUS PERANGKAT HP */
         .order-table-wrapper {
@@ -269,7 +270,7 @@
         .order-table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 550px;
+            min-width: 650px;
         }
 
         .order-table th, .order-table td {
@@ -303,6 +304,62 @@
             font-weight: 600;
             display: inline-block;
         }
+
+        /* MODAL POPUP UNTUK DETAIL PESANAN */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
+
+        .modal-content p {
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .modal-content strong {
+            color: #fff;
+        }
+
+        .btn-close-modal {
+            margin-top: 15px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -328,6 +385,16 @@
                 <div class="form-group">
                     <label for="harga">Harga Produk (Rp)</label>
                     <input type="number" id="harga" placeholder="15000000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="metodePembayaranDefault">Opsi Pembayaran Utama</label>
+                    <select id="metodePembayaranDefault">
+                        <option value="Transfer Bank">Transfer Bank / QRIS</option>
+                        <option value="COD (Bayar di Tempat)">COD (Bayar di Tempat)</option>
+                        <option value="E-Wallet (Gopay/OVO/Dana)">E-Wallet (Gopay/OVO/Dana)</option>
+                        <option value="Kartu Kredit / Debit">Kartu Kredit / Debit</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -391,6 +458,7 @@
                             <th>Total</th>
                             <th>Metode Bayar</th>
                             <th>Status Pengiriman</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="adminOrdersBody"></tbody>
@@ -398,6 +466,15 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- Modal Detail Pesanan -->
+    <div class="modal-overlay" id="orderModal">
+        <div class="modal-content">
+            <h3>📋 Rincian Pesanan</h3>
+            <div id="modalBody"></div>
+            <button class="btn-close-modal" onclick="closeModal()">Tutup</button>
+        </div>
     </div>
 
     <script>
@@ -432,6 +509,7 @@
                 id: 1,
                 nama: "Smartphone Premium X",
                 harga: 12000000,
+                metodeBayar: "Transfer Bank",
                 deskripsi: "Layar AMOLED 120Hz, RAM 12GB, Chipset Octa-Core, Kamera 108MP.",
                 gambar: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500",
                 ytVideo: "https://www.youtube.com/embed/L_LUpnjgPso"
@@ -440,6 +518,7 @@
                 id: 2,
                 nama: "Laptop Ultra Book Pro",
                 harga: 18500000,
+                metodeBayar: "Transfer Bank",
                 deskripsi: "Layar 14 Retina 120Hz, RAM 16GB SSD 512GB, Baterai Tahan 18 Jam.",
                 gambar: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500",
                 ytVideo: "https://www.youtube.com/embed/dQw4w9WgXcQ"
@@ -475,27 +554,26 @@
         }
 
         function renderAdminOrders() {
+            orders = JSON.parse(localStorage.getItem('gadgetOrders')) || [];
             const tbody = document.getElementById('adminOrdersBody');
             const orderCountElem = document.getElementById('totalOrdersCount');
             tbody.innerHTML = '';
             orderCountElem.innerText = orders.length;
 
             if (orders.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:#94a3b8;">Belum ada pesanan masuk.</td></tr>`;
                 return;
             }
 
             orders.forEach((ord, index) => {
-                const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty}x)`).join(', ');
-                
-                // Ambil metode pembayaran (fallback ke 'Transfer Bank' jika data lama tidak punya)
+                const itemsSummary = ord.items.map(i => `${i.nama} (${i.qty || 1}x)`).join(', ');
                 const paymentMethod = ord.paymentMethod || ord.metodePembayaran || 'Transfer Bank';
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>#${ord.id}</strong></td>
-                    <td>${ord.buyerName}</td>
-                    <td>${ord.date}</td>
+                    <td>${ord.buyerName || 'Pembeli'}</td>
+                    <td>${ord.date || '-'}</td>
                     <td>${itemsSummary}</td>
                     <td style="color:#10b981; font-weight:bold;">Rp ${Number(ord.total).toLocaleString('id-ID')}</td>
                     <td><span class="payment-badge">💳 ${paymentMethod}</span></td>
@@ -507,6 +585,9 @@
                             <option value="Selesai" ${ord.status === 'Selesai' ? 'selected' : ''}>🎉 Selesai</option>
                         </select>
                     </td>
+                    <td>
+                        <button class="btn-detail" onclick="showOrderDetail(${index})">Detail</button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -515,7 +596,41 @@
         function updateOrderStatus(index, newStatus) {
             orders[index].status = newStatus;
             localStorage.setItem('gadgetOrders', JSON.stringify(orders));
-            alert(`Status pesanan #${orders[index].id} diperbarui: ${newStatus}`);
+            alert(`Status pesanan #${orders[index].id} diperbarui menjadi: ${newStatus}`);
+        }
+
+        function showOrderDetail(index) {
+            const ord = orders[index];
+            const modal = document.getElementById('orderModal');
+            const body = document.getElementById('modalBody');
+
+            const itemsListHtml = ord.items.map(i => `
+                <li style="margin-bottom: 4px;">
+                    <strong>${i.nama}</strong> - ${i.qty || 1} x Rp ${Number(i.harga).toLocaleString('id-ID')}
+                </li>
+            `).join('');
+
+            body.innerHTML = `
+                <p><strong>ID Pesanan:</strong> #${ord.id}</p>
+                <p><strong>Nama Pembeli:</strong> ${ord.buyerName || '-'}</p>
+                <p><strong>Tanggal:</strong> ${ord.date || '-'}</p>
+                <p><strong>No. HP/Telepon:</strong> ${ord.phone || '-'}</p>
+                <p><strong>Alamat Pengiriman:</strong> ${ord.address || '-'}</p>
+                <p><strong>Metode Pembayaran:</strong> ${ord.paymentMethod || ord.metodePembayaran || 'Transfer Bank'}</p>
+                <p><strong>Status Saat Ini:</strong> ${ord.status || 'Sedang Diproses'}</p>
+                <hr style="border-color: rgba(255,255,255,0.1); margin: 10px 0;">
+                <p><strong>Daftar Item:</strong></p>
+                <ul style="padding-left: 18px; font-size: 0.8rem; color: #cbd5e1;">
+                    ${itemsListHtml}
+                </ul>
+                <p style="margin-top: 10px;"><strong>Total Biaya:</strong> <span style="color: #10b981;">Rp ${Number(ord.total).toLocaleString('id-ID')}</span></p>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('orderModal').style.display = 'none';
         }
 
         function handleFormSubmit(event) {
@@ -529,6 +644,7 @@
                 id: editId ? Number(editId) : Date.now(),
                 nama: document.getElementById('nama').value,
                 harga: Number(document.getElementById('harga').value),
+                metodeBayar: document.getElementById('metodePembayaranDefault').value,
                 deskripsi: document.getElementById('deskripsi').value,
                 gambar: document.getElementById('gambarUrl').value || 'https://via.placeholder.com/300',
                 ytVideo: videoInput
@@ -556,6 +672,7 @@
             document.getElementById('editProductId').value = prod.id;
             document.getElementById('nama').value = prod.nama;
             document.getElementById('harga').value = prod.harga;
+            document.getElementById('metodePembayaranDefault').value = prod.metodeBayar || 'Transfer Bank';
             document.getElementById('deskripsi').value = prod.deskripsi;
             document.getElementById('gambarUrl').value = prod.gambar;
             document.getElementById('ytVideoUrl').value = prod.ytVideo;
@@ -583,6 +700,13 @@
                 renderAdminProducts();
             }
         }
+
+        // Event listener jika ada perubahan data pesanan dari tab customer
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'gadgetOrders') {
+                renderAdminOrders();
+            }
+        });
 
         renderAdminProducts();
         renderAdminOrders();
